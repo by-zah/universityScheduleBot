@@ -13,7 +13,7 @@ public class Bot extends TelegramLongPollingCommandBot {
     private final String botToken;
 
     public Bot() throws IOException {
-        botToken = Files.readString(Paths.get(TOKEN_FILE_PATH));
+        botToken = Files.readAllLines(Paths.get(TOKEN_FILE_PATH)).get(0);
     }
 
     @Override
