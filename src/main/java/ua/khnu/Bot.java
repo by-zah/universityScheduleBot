@@ -9,17 +9,15 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingCommandBot {
     private static final Logger LOG = LogManager.getLogger(Bot.class);
     public static final String TOKEN_FILE_PATH = "token.txt";
-    private final String botToken;
+    private static final String BOT_TOKEN = "1372200103:AAE7d3xaocVhD0RV4z17vahNDm7sBYTwmvk";
 
     public Bot() throws IOException {
-        botToken = Files.readAllLines(Paths.get(TOKEN_FILE_PATH)).get(0);
+
     }
 
     @Override
@@ -44,7 +42,7 @@ public class Bot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return BOT_TOKEN;
     }
 
     private void sendMessageToUser(SendMessage message, User receiver, User sender) {
