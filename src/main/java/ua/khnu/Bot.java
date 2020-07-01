@@ -13,10 +13,10 @@ import java.util.List;
 
 public class Bot extends TelegramLongPollingCommandBot {
     private static final Logger LOG = LogManager.getLogger(Bot.class);
-    public static final String TOKEN_FILE_PATH = "token.txt";
-    private static final String BOT_TOKEN = "1372200103:AAE7d3xaocVhD0RV4z17vahNDm7sBYTwmvk";
+    private final String botToken;
 
     public Bot() throws IOException {
+        botToken = System.getenv("BOT_TOKEN");
 
     }
 
@@ -42,7 +42,7 @@ public class Bot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotToken() {
-        return BOT_TOKEN;
+        return botToken;
     }
 
     private void sendMessageToUser(SendMessage message, User receiver, User sender) {
