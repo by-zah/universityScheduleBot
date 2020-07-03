@@ -25,7 +25,7 @@ public class StartCommand implements IBotCommand {
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         SendMessage reMessage = new SendMessage();
         reMessage.setChatId(message.getChatId());
-        reMessage.setText("Bot is started, you can /subscribe or /unSubscribe to became or not university schedule updates");
+        reMessage.setText("Bot is started, you can /subscribe or" + System.lineSeparator() + " /unSubscribe to receive or not university schedule updates");
         try {
             absSender.execute(reMessage);
         } catch (TelegramApiException e) {
