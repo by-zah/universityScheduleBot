@@ -5,12 +5,13 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.List;
 
-public class UnSubscribeCommand extends SimpleAnswerIBotCommand {
+public class UnSubscribeCommand extends SimpleAnswerCommand {
     private final List<Long> subscribers;
 
     public UnSubscribeCommand(List<Long> subscribers) {
         this.subscribers = subscribers;
     }
+
     @Override
     public String getCommandIdentifier() {
         return "unSubscribe";

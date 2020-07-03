@@ -3,7 +3,7 @@ package ua.khnu.commans;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-public class NonCommandCommand extends SimpleAnswerIBotCommand {
+public class NonCommandCommand extends SimpleAnswerCommand {
 
     @Override
     public String getCommandIdentifier() {

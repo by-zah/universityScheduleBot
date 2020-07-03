@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public abstract class SimpleAnswerIBotCommand implements IBotCommand {
-    private static final Logger LOG = LogManager.getLogger(SimpleAnswerIBotCommand.class);
+public abstract class SimpleAnswerCommand implements IBotCommand {
+    private static final Logger LOG = LogManager.getLogger(SimpleAnswerCommand.class);
 
     protected void sendMessage(AbsSender absSender, String messageText, long chatId) {
         SendMessage reMessage = new SendMessage();

@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.List;
 
-public class SubscribeCommand extends SimpleAnswerIBotCommand {
+public class SubscribeCommand extends SimpleAnswerCommand {
     private final List<Long> subscribers;
 
     public SubscribeCommand(List<Long> subscribers) {
