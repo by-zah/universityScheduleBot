@@ -9,6 +9,7 @@ public class Bot extends TelegramLongPollingCommandBot {
     private final IBotCommand nonCommandCommand;
 
     public Bot(IBotCommand nonCommandCommand) {
+        super();
         botToken = System.getenv("BOT_TOKEN");
         this.nonCommandCommand = nonCommandCommand;
     }
