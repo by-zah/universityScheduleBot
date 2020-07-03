@@ -20,8 +20,6 @@ public class BotInitializer {
 
     public void init() {
         try {
-            LOG.info("Initializing API context...");
-            ApiContextInitializer.init();
             TelegramBotsApi botsApi = new TelegramBotsApi();
             LOG.info("Registering Bot...");
             botsApi.registerBot(bot);
