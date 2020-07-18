@@ -7,6 +7,9 @@
     <groupId>org.example</groupId>
     <artifactId>universityScheduleBot</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <spring.ver>5.2.5.RELEASE</spring.ver>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -25,7 +28,7 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>ua.khnu.Main</mainClass>
+                            <mainClass>ua.khnu.ScheduleBotApplication</mainClass>
                             <name>workerBot</name>
                         </program>
                     </programs>
@@ -42,7 +45,23 @@
         </plugins>
     </build>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.ver}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.ver}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.ver}</version>
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

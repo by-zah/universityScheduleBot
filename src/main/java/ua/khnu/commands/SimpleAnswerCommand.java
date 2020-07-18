@@ -1,4 +1,4 @@
-package ua.khnu.commans;
+package ua.khnu.commands;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

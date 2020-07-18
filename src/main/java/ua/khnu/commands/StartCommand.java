@@ -1,8 +1,10 @@
-package ua.khnu.commans;
+package ua.khnu.commands;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+@Component
 public class StartCommand extends SimpleAnswerCommand {
 
     @Override
@@ -19,8 +21,8 @@ public class StartCommand extends SimpleAnswerCommand {
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         sendMessage(absSender
                 ,"Bot is started, you can /subscribe or"
-                + System.lineSeparator()
-                + " /unSubscribe to receive or not university schedule updates"
+                        + System.lineSeparator()
+                        + " /unSubscribe to receive or not university schedule updates"
                 ,message.getChatId());
     }
 }
