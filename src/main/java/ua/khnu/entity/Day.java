@@ -1,7 +1,6 @@
 package ua.khnu.entity;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Day {
@@ -13,7 +12,6 @@ public class Day {
 
     public Day(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
-        lessons = new ArrayList<>();
     }
 
     public DayOfWeek getDayOfWeek() {
@@ -22,5 +20,9 @@ public class Day {
 
     public List<Lesson> getLessons() {
         return lessons;
+    }
+
+    public void setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
     }
 }
