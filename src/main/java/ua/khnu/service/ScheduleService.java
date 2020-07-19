@@ -2,7 +2,7 @@ package ua.khnu.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ua.khnu.dto.LessonAndDateTime;
+import ua.khnu.dto.DayAndIndex;
 import ua.khnu.entity.Day;
 import ua.khnu.entity.Lesson;
 import ua.khnu.entity.Schedule;
@@ -29,28 +29,22 @@ public class ScheduleService {
         return repository.isSchedulePresent();
     }
 
-    public LessonAndDateTime getNearestLesson() {
+    public DayAndIndex getCurrentDayWithIndex() {
         Schedule schedule = repository.getSchedule().orElseThrow(IllegalStateException::new);
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
-        LocalDate nextLessonDay = now.toLocalDate();
-        LessonAndDateTime nextLesson = null;
-        while (nextLesson == null || nextLesson.getLesson() == null) {
-            Optional<Day> workingDayOpt = getSpecifiedWorkingDay(nextLessonDay.getDayOfWeek(), schedule);
-            while (!workingDayOpt.isPresent()) {
-                nextLessonDay = nextLessonDay.plusDays(1);
-                workingDayOpt = getSpecifiedWorkingDay(nextLessonDay.getDayOfWeek(), schedule);
-            }
-            Day workingDay = workingDayOpt.get();
-            LocalDateTime nextLessonDateTime = nextLessonDay.atStartOfDay();
-            nextLesson = getNextLesson(workingDay, nextLessonDateTime, now);
-            nextLessonDay = nextLessonDay.plusDays(1);
-        }
-        return nextLesson;
+        LocalDateTime date = LocalDate.now(ZoneId.of(TIME_ZONE_ID)).atStartOfDay();
+        Optional<Day> dayOpt;
+        do {
+            dayOpt = getSpecifiedWorkingDay(date.getDayOfWeek(), schedule);
+            date = date.plusDays(1);
+        } while(!dayOpt.isPresent());
+        Day day = dayOpt.get();
+        Lesson lesson = getNextLesson(day,date,LocalDateTime.now(ZoneId.of(TIME_ZONE_ID)));
+        return new DayAndIndex(day,day.getLessons().indexOf(lesson));
     }
 
-    private LessonAndDateTime getNextLesson(Day workingDay, LocalDateTime nextLessonDate, LocalDateTime now) {
+    private Lesson getNextLesson(Day workingDay, LocalDateTime nextLessonDate, LocalDateTime now) {
         Lesson nextLesson = null;
-        LocalDateTime nextLessonDateTime = null;
+        LocalDateTime nextLessonDateTime;
         for (Lesson lesson : workingDay.getLessons()) {
             nextLessonDateTime = nextLessonDate.plusHours(lesson.getStartHour());
             nextLessonDateTime = nextLessonDateTime.plusMinutes(lesson.getStartMin());
@@ -59,7 +53,7 @@ public class ScheduleService {
                 break;
             }
         }
-        return new LessonAndDateTime(nextLesson, nextLessonDateTime);
+        return nextLesson;
     }
 
     private Optional<Day> getSpecifiedWorkingDay(DayOfWeek dayOfWeek, Schedule schedule) {
