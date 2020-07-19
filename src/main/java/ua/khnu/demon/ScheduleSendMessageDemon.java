@@ -68,6 +68,8 @@ public class ScheduleSendMessageDemon implements Runnable {
             DayAndIndex dayAndIndex = scheduleService.getCurrentDayWithIndex();
             stateDay = dayAndIndex.getDay();
             stateIndex = dayAndIndex.getIndex();
+        } else{
+            stateIndex++;
         }
     }
 
