@@ -1,6 +1,8 @@
 package ua.khnu.entity;
 
-public class Lesson {
+import java.util.Objects;
+
+public class Lesson implements Comparable<Lesson> {
     private String name;
     private int startHour;
     private int endHour;
@@ -56,5 +58,28 @@ public class Lesson {
                 ", startMin=" + startMin +
                 ", endMin=" + endMin +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lesson lesson = (Lesson) o;
+        return startHour == lesson.startHour &&
+                endHour == lesson.endHour &&
+                startMin == lesson.startMin &&
+                endMin == lesson.endMin &&
+                Objects.equals(name, lesson.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, startHour, endHour, startMin, endMin);
+    }
+
+    @Override
+    public int compareTo(Lesson o) {
+        int i = startHour - o.startHour;
+        return i == 0?i:startMin - o.startMin;
     }
 }
