@@ -71,4 +71,24 @@ public class ScheduleServiceTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void shouldReturnNextLessonWithExistingBeforeOne(){
+        Lesson lesson = new Lesson();
+        lesson.setStartMin(now.getMinute() - 1);
+        lesson.setStartHour(now.getHour());
+
+        Lesson expected = new Lesson();
+        expected.setStartMin(now.getMinute() + 3);
+        expected.setStartHour(now.getHour());
+
+        lessons.add(lesson);
+        lessons.add(expected);
+
+
+        DayAndIndex di = service.getCurrentDayWithIndex();
+        Lesson actual = di.getDay().getLessons().get(di.getIndex());
+
+
+        assertEquals(expected, actual);
+    }
 }

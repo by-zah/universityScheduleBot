@@ -25,4 +25,12 @@ public class Day {
     public void setLessons(List<Lesson> lessons) {
         this.lessons = lessons;
     }
+
+    @Override
+    public String toString() {
+        return "Day{" +
+                "dayOfWeek=" + dayOfWeek +
+                ", lessons=" + lessons +
+                '}';
+    }
 }
