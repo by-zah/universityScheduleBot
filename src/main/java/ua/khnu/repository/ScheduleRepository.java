@@ -1,36 +1,28 @@
 package ua.khnu.repository;
 
-import com.google.gson.Gson;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ua.khnu.entity.Schedule;
+import org.springframework.stereotype.Repository;
+import ua.khnu.entity.ScheduleUnit;
 
-import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-@Component
-public class ScheduleRepository {
-    private final Gson gson;
-    private final ReentrantLock lock;
-    private Schedule schedule;
+@Repository
+public class ScheduleRepository extends AbstractRepository<ScheduleUnit> {
 
     @Autowired
-    public ScheduleRepository(Gson gson) {
-        this.gson = gson;
-        lock = new ReentrantLock();
+    public ScheduleRepository(SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
-    public Optional<Schedule> getSchedule() {
-        return Optional.ofNullable(schedule);
+    public void clear() {
+        transaction(session -> session.createQuery("DELETE FROM ScheduleUnit").executeUpdate());
     }
 
-    public void setScheduleFromJSON(String json) {
-        lock.lock();
-        this.schedule = gson.fromJson(json, Schedule.class);
-        lock.unlock();
-    }
-
-    public boolean isSchedulePresent() {
-        return schedule != null;
+    public List<ScheduleUnit> getAll() {
+        AtomicReference<List<ScheduleUnit>> res = new AtomicReference<>();
+        transaction(session -> res.set(session.createQuery("FROM ScheduleUnit",ScheduleUnit.class).list()));
+        return res.get();
     }
 }

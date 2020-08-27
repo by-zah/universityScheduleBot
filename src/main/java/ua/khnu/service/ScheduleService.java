@@ -1,65 +1,46 @@
 package ua.khnu.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ua.khnu.dto.DayAndIndex;
-import ua.khnu.entity.Day;
-import ua.khnu.entity.Lesson;
-import ua.khnu.entity.Schedule;
+import org.springframework.stereotype.Service;
+import ua.khnu.dto.ScheduleContainer;
+import ua.khnu.entity.ScheduleUnit;
+import ua.khnu.exception.BotException;
 import ua.khnu.repository.ScheduleRepository;
-import ua.khnu.util.Converter;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Type;
+import java.util.List;
 
-import static ua.khnu.BotInitializer.TIME_ZONE_ID;
+import static java.time.DayOfWeek.MONDAY;
 
-@Component
+@Service
 public class ScheduleService {
     private final ScheduleRepository repository;
+    private final Gson gson;
+    private final ScheduleContainer scheduleContainer;
+    private static final Type SCHEDULE_LIST_TYPE = TypeToken.getParameterized(List.class, ScheduleUnit.class).getType();
 
     @Autowired
-    public ScheduleService(ScheduleRepository repository) {
+    public ScheduleService(ScheduleRepository repository, Gson gson, ScheduleContainer scheduleContainer) {
         this.repository = repository;
+        this.gson = gson;
+        this.scheduleContainer = scheduleContainer;
     }
 
-    public boolean isSchedulePresent() {
-        return repository.isSchedulePresent();
+    @PostConstruct
+    private void setUpSchedule(){
+        scheduleContainer.setSchedule(repository.getAll());
     }
 
-    public DayAndIndex getCurrentDayWithIndex() {
-        Schedule schedule = repository.getSchedule().orElseThrow(IllegalStateException::new);
-        LocalDateTime date = LocalDate.now(ZoneId.of(TIME_ZONE_ID)).atStartOfDay();
-
-        Optional<Lesson> lessonOpt = Optional.empty();
-        Day day = null;
-        while (!lessonOpt.isPresent()) {
-            Optional<Day> dayOpt = getSpecifiedWorkingDay(date.getDayOfWeek(), schedule);
-            while (!dayOpt.isPresent()) {
-                dayOpt = getSpecifiedWorkingDay(date.getDayOfWeek(), schedule);
-                date = date.plusDays(1);
-            }
-            day = dayOpt.get();
-            day.getLessons().sort(Lesson::compareTo);
-            lessonOpt = getNextLesson(day, date, LocalDateTime.now(ZoneId.of(TIME_ZONE_ID)));
-            date = date.plusDays(1);
+    public void updateScheduleFromJson(String json) {
+        List<ScheduleUnit> schedule = gson.fromJson(json, SCHEDULE_LIST_TYPE);
+        if (schedule == null || schedule.isEmpty()) {
+            throw new BotException("Invalid schedule");
         }
-        return new DayAndIndex(day, day.getLessons().indexOf(lessonOpt.get()));
-    }
-
-    private Optional<Lesson> getNextLesson(Day workingDay, LocalDateTime nextLessonDate, LocalDateTime now) {
-        return workingDay.getLessons().stream()
-                .filter(lesson -> Converter.lessonToStartDateTime(lesson, nextLessonDate.getDayOfWeek()).compareTo(now) > 0)
-                .findFirst();
-    }
-
-    private Optional<Day> getSpecifiedWorkingDay(DayOfWeek dayOfWeek, Schedule schedule) {
-        return schedule.getDays()
-                .stream()
-                .filter(day -> day.getDayOfWeek().equals(dayOfWeek))
-                .findAny();
+        repository.clear();
+        repository.createAll(schedule);
+        scheduleContainer.setSchedule(schedule);
     }
 }
