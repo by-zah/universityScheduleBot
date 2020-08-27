@@ -5,19 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import ua.khnu.Bot;
-import ua.khnu.commands.NonCommandCommand;
-import ua.khnu.commands.SetScheduleCommand;
-import ua.khnu.commands.StartCommand;
-import ua.khnu.commands.SubscribeCommand;
-import ua.khnu.commands.UnSubscribeCommand;
+import ua.khnu.commands.*;
 import ua.khnu.demon.ScheduleSendMessageDemon;
-import ua.khnu.service.ScheduleService;
+import ua.khnu.dto.ScheduleContainer;
+import ua.khnu.service.GroupService;
+import ua.khnu.service.PeriodService;
+import ua.khnu.service.SubscriptionService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Configuration
 public class AppConfig {
@@ -27,17 +26,14 @@ public class AppConfig {
     }
 
     @Bean
-    public List<Long> subscribers() {
-        return new CopyOnWriteArrayList<>();
-    }
-
-    @Bean
     @Autowired
     public Bot bot(ApplicationContext context) {
         Bot bot = new Bot();
         bot.register(context.getBean(StartCommand.class));
         bot.register(context.getBean(SubscribeCommand.class));
         bot.register(context.getBean(UnSubscribeCommand.class));
+        bot.register(context.getBean(CreateNewGroupCommand.class));
+        bot.register(context.getBean(AddClassesCommand.class));
         return bot;
     }
 
@@ -48,17 +44,22 @@ public class AppConfig {
 
     @Bean
     @Autowired
-    public Thread scheduleSendMessageDemon(List<Long> subscribers, Bot bot, ScheduleService scheduleService) {
-        Thread thread = new Thread(new ScheduleSendMessageDemon(subscribers, bot, scheduleService));
+    public Thread scheduleSendMessageDemon(Bot bot, ApplicationContext context) {
+        ScheduleContainer scheduleContainer = context.getBean(ScheduleContainer.class);
+        PeriodService periodService = context.getBean(PeriodService.class);
+        SubscriptionService subscriptionService = context.getBean(SubscriptionService.class);
+        GroupService groupService = context.getBean(GroupService.class);
+        Thread thread = new Thread(
+                new ScheduleSendMessageDemon(bot, scheduleContainer, periodService, subscriptionService, groupService));
         thread.setDaemon(true);
         return thread;
     }
 
     @Bean
     @Autowired
-    public List<NonCommandCommand> nonCommandCommands(ApplicationContext context) {
-        List<NonCommandCommand> commands = new ArrayList<>();
-        commands.add(context.getBean(SetScheduleCommand.class));
+    public List<IBotCommand> nonCommandCommands(ApplicationContext context) {
+        List<IBotCommand> commands = new ArrayList<>();
+        commands.add(context.getBean(UpdateScheduleCommand.class));
         return commands;
     }
 }

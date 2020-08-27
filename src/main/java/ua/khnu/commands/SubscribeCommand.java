@@ -4,16 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-
-import java.util.List;
+import ua.khnu.exception.BotException;
+import ua.khnu.service.SubscriptionService;
 
 @Component
 public class SubscribeCommand extends SimpleAnswerCommand {
-    private final List<Long> subscribers;
+    public static final String YOU_ARE_SUCCESSFULLY_SUBSCRIBED = "You are successfully subscribed";
+
+    private final SubscriptionService subscriptionService;
 
     @Autowired
-    public SubscribeCommand(List<Long> subscribers) {
-        this.subscribers = subscribers;
+    public SubscribeCommand(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
     }
 
     @Override
@@ -29,12 +31,11 @@ public class SubscribeCommand extends SimpleAnswerCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         long chatId = message.getChatId();
-        boolean containsId = subscribers.contains(chatId);
-        if (!containsId) {
-            subscribers.add(chatId);
+        try {
+            subscriptionService.subscribe(chatId, message.getText());
+            sendMessage(absSender, YOU_ARE_SUCCESSFULLY_SUBSCRIBED, chatId);
+        } catch (BotException e) {
+            sendMessage(absSender, e.getMessage(), chatId);
         }
-        String messageText = containsId ?
-                "You are already subscribed" : "You are successfully subscribed";
-        sendMessage(absSender,messageText,chatId);
     }
 }
