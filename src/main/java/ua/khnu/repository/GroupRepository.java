@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ua.khnu.entity.Group;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,19 +29,6 @@ public class GroupRepository extends AbstractRepository<Group> {
         transaction(session -> {
             Query<Group> query = session.createQuery("FROM Group g WHERE g.owner= :userChatId", Group.class);
             query.setParameter("userChatId", userChatId);
-            res.set(query.list());
-        });
-        return res.get();
-    }
-
-    public List<Group> getGroupsByPeriodExistence(int periodIndex, DayOfWeek dayOfWeek) {
-        AtomicReference<List<Group>> res = new AtomicReference<>();
-        transaction(session -> {
-            Query<Group> query = session
-                    .createQuery("FROM Group g JOIN Period p WHERE p.index = :index and p.day = :day",
-                            Group.class);
-            query.setParameter("index", periodIndex);
-            query.setParameter("day", dayOfWeek);
             res.set(query.list());
         });
         return res.get();

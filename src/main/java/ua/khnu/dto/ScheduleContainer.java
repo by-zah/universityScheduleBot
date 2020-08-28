@@ -3,7 +3,6 @@ package ua.khnu.dto;
 import org.springframework.stereotype.Component;
 import ua.khnu.entity.ScheduleUnit;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 

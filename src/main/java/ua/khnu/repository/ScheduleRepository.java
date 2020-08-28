@@ -22,7 +22,7 @@ public class ScheduleRepository extends AbstractRepository<ScheduleUnit> {
 
     public List<ScheduleUnit> getAll() {
         AtomicReference<List<ScheduleUnit>> res = new AtomicReference<>();
-        transaction(session -> res.set(session.createQuery("FROM ScheduleUnit",ScheduleUnit.class).list()));
+        transaction(session -> res.set(session.createQuery("FROM ScheduleUnit", ScheduleUnit.class).list()));
         return res.get();
     }
 }

@@ -21,20 +21,20 @@ public class User {
         return chatId;
     }
 
-    public String getLocal() {
-        return local;
-    }
-
-    public String getInterfacultyDiscipline() {
-        return interfacultyDiscipline;
-    }
-
     public void setChatId(long chatId) {
         this.chatId = chatId;
     }
 
+    public String getLocal() {
+        return local;
+    }
+
     public void setLocal(String local) {
         this.local = local;
+    }
+
+    public String getInterfacultyDiscipline() {
+        return interfacultyDiscipline;
     }
 
     public void setInterfacultyDiscipline(String interfacultyDiscipline) {

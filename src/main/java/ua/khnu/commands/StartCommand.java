@@ -20,9 +20,9 @@ public class StartCommand extends SimpleAnswerCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         sendMessage(absSender
-                ,"Bot is started, you can /subscribe or"
+                , "Bot is started, you can /subscribe or"
                         + System.lineSeparator()
                         + " /unSubscribe to receive or not university schedule updates"
-                ,message.getChatId());
+                , message.getChatId());
     }
 }

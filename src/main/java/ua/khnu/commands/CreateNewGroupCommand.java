@@ -8,7 +8,7 @@ import ua.khnu.exception.BotException;
 import ua.khnu.service.GroupService;
 
 @Component
-public class CreateNewGroupCommand extends SimpleAnswerCommand{
+public class CreateNewGroupCommand extends SimpleAnswerCommand {
     private final GroupService groupService;
 
     @Autowired
@@ -29,10 +29,10 @@ public class CreateNewGroupCommand extends SimpleAnswerCommand{
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] strings) {
         try {
-            groupService.createNewGroup(message.getChatId(),message.getText());
-            sendMessage(absSender,"new group created",message.getChatId());
-        } catch (BotException e){
-            sendMessage(absSender,e.getMessage(),message.getChatId());
+            groupService.createNewGroup(message.getChatId(), message.getText());
+            sendMessage(absSender, "new group created", message.getChatId());
+        } catch (BotException e) {
+            sendMessage(absSender, e.getMessage(), message.getChatId());
         }
     }
 }

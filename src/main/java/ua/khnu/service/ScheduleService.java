@@ -13,14 +13,12 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static java.time.DayOfWeek.MONDAY;
-
 @Service
 public class ScheduleService {
+    private static final Type SCHEDULE_LIST_TYPE = TypeToken.getParameterized(List.class, ScheduleUnit.class).getType();
     private final ScheduleRepository repository;
     private final Gson gson;
     private final ScheduleContainer scheduleContainer;
-    private static final Type SCHEDULE_LIST_TYPE = TypeToken.getParameterized(List.class, ScheduleUnit.class).getType();
 
     @Autowired
     public ScheduleService(ScheduleRepository repository, Gson gson, ScheduleContainer scheduleContainer) {
@@ -30,7 +28,7 @@ public class ScheduleService {
     }
 
     @PostConstruct
-    private void setUpSchedule(){
+    private void setUpSchedule() {
         scheduleContainer.setSchedule(repository.getAll());
     }
 

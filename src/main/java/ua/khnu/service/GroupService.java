@@ -8,8 +8,6 @@ import ua.khnu.exception.BotException;
 import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.UserRepository;
 
-import java.time.DayOfWeek;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,7 +42,4 @@ public class GroupService {
         groupRepository.createOrUpdate(group);
     }
 
-    public List<Group> findGroupsThatHaveSpecifiedPeriod(int periodIndex, DayOfWeek dayOfWeek) {
-        return groupRepository.getGroupsByPeriodExistence(periodIndex, dayOfWeek);
-    }
 }

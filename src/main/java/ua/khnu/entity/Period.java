@@ -1,16 +1,10 @@
 package ua.khnu.entity;
 
-import ua.khnu.BotInitializer;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Entity
 @Table(name = "classes")
@@ -25,7 +19,7 @@ public class Period implements Serializable {
 
     @Id
     @Column(name = "day")
-    private DayOfWeek day;
+    private int day;
 
     @Column(name = "name")
     private String name;
@@ -52,13 +46,14 @@ public class Period implements Serializable {
         this.index = index;
     }
 
-    public DayOfWeek getDay() {
+    public int getDay() {
         return day;
     }
 
-    public void setDay(DayOfWeek day) {
+    public void setDay(int day) {
         this.day = day;
     }
+
 
     public String getName() {
         return name;

@@ -11,17 +11,15 @@ import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.PeriodRepository;
 
 import java.lang.reflect.Type;
-import java.time.DayOfWeek;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PeriodService {
+    public static final Type PERIOD_LIST_TYPE = TypeToken.getParameterized(List.class, Period.class).getType();
     private final PeriodRepository periodRepository;
     private final GroupRepository groupRepository;
     private final Gson gson;
-    public static final Type PERIOD_LIST_TYPE = TypeToken.getParameterized(List.class, Period.class).getType();
 
     @Autowired
     public PeriodService(PeriodRepository periodRepository, Gson gson, GroupRepository groupRepository) {
@@ -44,7 +42,4 @@ public class PeriodService {
         periodRepository.createAll(classes);
     }
 
-    public Optional<Period> getPeriodByIds(int index, String groupName, DayOfWeek day) {
-        return periodRepository.getByIds(index, groupName, day);
-    }
 }

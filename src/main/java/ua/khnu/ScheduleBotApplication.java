@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.ApiContextInitializer;
 
-//TODO store user entity in db
 //TODO add localization
 public class ScheduleBotApplication {
     private static final Logger LOG = LogManager.getLogger(ScheduleBotApplication.class);

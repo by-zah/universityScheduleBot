@@ -7,12 +7,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ua.khnu.entity.Period;
-import ua.khnu.exception.BotException;
 import ua.khnu.repository.util.Operation;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public abstract class AbstractRepository<T> {
@@ -35,7 +32,8 @@ public abstract class AbstractRepository<T> {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new BotException("Error while data saving");
+            throw e;
+            // throw new BotException("Error while data saving");
         }
     }
 

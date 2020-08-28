@@ -16,9 +16,9 @@ public class UserRepository extends AbstractRepository<User> {
         super(sessionFactory);
     }
 
-    public Optional<User> getById(Long chatId){
+    public Optional<User> getById(Long chatId) {
         AtomicReference<Optional<User>> res = new AtomicReference<>();
-        transaction(session ->res.set(session.byId(User.class).loadOptional(chatId)));
+        transaction(session -> res.set(session.byId(User.class).loadOptional(chatId)));
         return res.get();
     }
 }

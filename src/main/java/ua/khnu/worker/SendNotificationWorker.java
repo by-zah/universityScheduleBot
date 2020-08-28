@@ -4,14 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ua.khnu.Bot;
-import ua.khnu.entity.Group;
 import ua.khnu.entity.Period;
 import ua.khnu.entity.Subscription;
-import ua.khnu.exception.BotException;
-import ua.khnu.service.PeriodService;
 import ua.khnu.service.SubscriptionService;
 
-import java.time.DayOfWeek;
 import java.util.List;
 
 public class SendNotificationWorker implements Runnable {
@@ -22,10 +18,10 @@ public class SendNotificationWorker implements Runnable {
     private final Period period;
 
     public SendNotificationWorker(Bot bot, SubscriptionService subscriptionService,
-                                  Group group, PeriodService periodService, int index, DayOfWeek now) {
+                                  Period period) {
         this.bot = bot;
-        this.subscriptions = subscriptionService.getAllSubscriptionsByGroupName(group.getName());
-        this.period = periodService.getPeriodByIds(index,group.getName(),now).orElseThrow(IllegalStateException::new);
+        this.subscriptions = subscriptionService.getAllSubscriptionsByGroupName(period.getGroupName());
+        this.period = period;
     }
 
     @Override

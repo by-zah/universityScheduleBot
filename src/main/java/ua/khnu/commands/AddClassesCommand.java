@@ -9,7 +9,7 @@ import ua.khnu.service.PeriodService;
 import ua.khnu.util.FileDownloader;
 
 @Component
-public class AddClassesCommand extends SimpleAnswerCommand{
+public class AddClassesCommand extends SimpleAnswerCommand {
     private final PeriodService service;
 
     @Autowired
@@ -31,10 +31,10 @@ public class AddClassesCommand extends SimpleAnswerCommand{
     public void processMessage(AbsSender absSender, Message message, String[] strings) {
         long chatId = message.getChatId();
         try {
-            byte[] content = FileDownloader.getFileContent(absSender,message, "json");
+            byte[] content = FileDownloader.getFileContent(absSender, message, "json");
             service.addAllFromJson(new String(content), chatId);
-            sendMessage(absSender,"Classes added",chatId);
-        }catch (BotException e){
+            sendMessage(absSender, "Classes added", chatId);
+        } catch (BotException e) {
             sendMessage(absSender, e.getMessage(), chatId);
         }
     }

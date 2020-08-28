@@ -29,7 +29,7 @@ public class UnSubscribeCommand extends SimpleAnswerCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         long chatId = message.getChatId();
-        service.unSubscribe(chatId,message.getText());
-        sendMessage(absSender,"You are successfully unsubscribed",chatId);
+        service.unSubscribe(chatId, message.getText());
+        sendMessage(absSender, "You are successfully unsubscribed", chatId);
     }
 }

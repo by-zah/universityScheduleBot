@@ -10,10 +10,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import ua.khnu.Bot;
 import ua.khnu.commands.*;
 import ua.khnu.demon.ScheduleSendMessageDemon;
-import ua.khnu.dto.ScheduleContainer;
-import ua.khnu.service.GroupService;
-import ua.khnu.service.PeriodService;
-import ua.khnu.service.SubscriptionService;
+import ua.khnu.service.SendMessageService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +41,10 @@ public class AppConfig {
 
     @Bean
     @Autowired
-    public Thread scheduleSendMessageDemon(Bot bot, ApplicationContext context) {
-        ScheduleContainer scheduleContainer = context.getBean(ScheduleContainer.class);
-        PeriodService periodService = context.getBean(PeriodService.class);
-        SubscriptionService subscriptionService = context.getBean(SubscriptionService.class);
-        GroupService groupService = context.getBean(GroupService.class);
+    public Thread scheduleSendMessageDemon(ApplicationContext context) {
+        SendMessageService sendMessageService = context.getBean(SendMessageService.class);
         Thread thread = new Thread(
-                new ScheduleSendMessageDemon(bot, scheduleContainer, periodService, subscriptionService, groupService));
+                new ScheduleSendMessageDemon(sendMessageService));
         thread.setDaemon(true);
         return thread;
     }
