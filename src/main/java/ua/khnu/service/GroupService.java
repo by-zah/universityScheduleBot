@@ -27,7 +27,7 @@ public class GroupService {
             throw new BotException("this command allows only 1 argument - group name");
         }
         String groupName = args[1];
-        Optional<Group> groupOpt = groupRepository.getById(groupName);
+        Optional<Group> groupOpt = groupRepository.getByGroupName(groupName);
         if (groupOpt.isPresent()) {
             throw new BotException("Group with this name already exist");
         }

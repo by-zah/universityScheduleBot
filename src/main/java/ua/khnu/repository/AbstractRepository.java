@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ua.khnu.exception.BotException;
 import ua.khnu.repository.util.Operation;
 
 import java.util.List;
@@ -32,8 +33,7 @@ public abstract class AbstractRepository<T> {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw e;
-            // throw new BotException("Error while data saving");
+            throw new BotException("Error happens, try again later");
         }
     }
 
@@ -46,7 +46,7 @@ public abstract class AbstractRepository<T> {
     }
 
     public void createAll(List<T> entities) {
-        transaction(session -> entities.forEach(session::save));
+        transaction(session -> entities.forEach(session::saveOrUpdate));
     }
 
 }

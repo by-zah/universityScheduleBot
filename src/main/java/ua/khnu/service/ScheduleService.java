@@ -16,29 +16,33 @@ import java.util.List;
 @Service
 public class ScheduleService {
     private static final Type SCHEDULE_LIST_TYPE = TypeToken.getParameterized(List.class, ScheduleUnit.class).getType();
-    private final ScheduleRepository repository;
+    private final ScheduleRepository scheduleRepository;
     private final Gson gson;
     private final ScheduleContainer scheduleContainer;
 
     @Autowired
-    public ScheduleService(ScheduleRepository repository, Gson gson, ScheduleContainer scheduleContainer) {
-        this.repository = repository;
+    public ScheduleService(ScheduleRepository scheduleRepository, Gson gson, ScheduleContainer scheduleContainer) {
+        this.scheduleRepository = scheduleRepository;
         this.gson = gson;
         this.scheduleContainer = scheduleContainer;
     }
 
     @PostConstruct
     private void setUpSchedule() {
-        scheduleContainer.setSchedule(repository.getAll());
+        scheduleContainer.setSchedule(scheduleRepository.getAll());
     }
 
     public void updateScheduleFromJson(String json) {
-        List<ScheduleUnit> schedule = gson.fromJson(json, SCHEDULE_LIST_TYPE);
-        if (schedule == null || schedule.isEmpty()) {
-            throw new BotException("Invalid schedule");
+        try {
+            List<ScheduleUnit> schedule = gson.fromJson(json, SCHEDULE_LIST_TYPE);
+            if (schedule == null || schedule.isEmpty()) {
+                throw new BotException("Invalid schedule");
+            }
+            scheduleRepository.clear();
+            scheduleRepository.createAll(schedule);
+            scheduleContainer.setSchedule(schedule);
+        } catch (IllegalStateException e) {
+            throw new BotException("Invalid json");
         }
-        repository.clear();
-        repository.createAll(schedule);
-        scheduleContainer.setSchedule(schedule);
     }
 }

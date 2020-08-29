@@ -18,9 +18,9 @@ public class GroupRepository extends AbstractRepository<Group> {
         super(sessionFactory);
     }
 
-    public Optional<Group> getById(String id) {
+    public Optional<Group> getByGroupName(String groupName) {
         AtomicReference<Optional<Group>> res = new AtomicReference<>();
-        transaction(session -> res.set(session.byId(Group.class).loadOptional(id)));
+        transaction(session -> res.set(session.byId(Group.class).loadOptional(groupName)));
         return res.get();
     }
 

@@ -10,8 +10,6 @@ import ua.khnu.repository.SubscriptionRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.util.MessageParser;
 
-import java.util.List;
-
 @Service
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
@@ -29,7 +27,7 @@ public class SubscriptionService {
 
     public void subscribe(long userChatId, String message) {
         String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", message);
-        if (!groupRepository.getById(groupName).isPresent()) {
+        if (!groupRepository.getByGroupName(groupName).isPresent()) {
             throw new BotException("There isn`t group with specified name");
         }
         if (!userRepository.getById(userChatId).isPresent()) {
@@ -52,9 +50,5 @@ public class SubscriptionService {
         subscription.setUser(userChatId);
         subscription.setGroup(groupName);
         subscriptionRepository.delete(subscription);
-    }
-
-    public List<Subscription> getAllSubscriptionsByGroupName(String groupName) {
-        return subscriptionRepository.getAllSubscriptionsByGroupName(groupName);
     }
 }

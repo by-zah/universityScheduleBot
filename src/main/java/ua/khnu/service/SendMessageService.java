@@ -1,14 +1,18 @@
 package ua.khnu.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ua.khnu.Bot;
 import ua.khnu.BotInitializer;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Period;
 import ua.khnu.entity.ScheduleUnit;
+import ua.khnu.entity.Subscription;
 import ua.khnu.repository.PeriodRepository;
-import ua.khnu.worker.SendNotificationWorker;
+import ua.khnu.repository.SubscriptionRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -18,20 +22,22 @@ import java.util.List;
 
 @Service
 public class SendMessageService {
+    private static final Logger LOG = LogManager.getLogger(SendMessageService.class);
+
     private static final int TEN_MINUTES_IN_MILLIS = 600000;
     private final Bot bot;
     private final ScheduleContainer scheduleContainer;
     private final PeriodRepository periodRepository;
-    private final SubscriptionService subscriptionService;
+    private final SubscriptionRepository subscriptionRepository;
     private boolean nextDay;
 
     @Autowired
     public SendMessageService(Bot bot, ScheduleContainer scheduleContainer,
-                              PeriodRepository periodRepository, SubscriptionService subscriptionService) {
+                              PeriodRepository periodRepository, SubscriptionRepository subscriptionRepository) {
         this.bot = bot;
         this.scheduleContainer = scheduleContainer;
         this.periodRepository = periodRepository;
-        this.subscriptionService = subscriptionService;
+        this.subscriptionRepository = subscriptionRepository;
     }
 
     public boolean isReady() {
@@ -57,11 +63,20 @@ public class SendMessageService {
 
     private void sendNotifications(List<Period> classes) {
         for (Period period : classes) {
-            Thread thread =
-                    new Thread(
-                            new SendNotificationWorker(bot, subscriptionService, period)
-                    );
-            thread.start();
+            new Thread(() -> {
+                List<Subscription> subscriptions =
+                        subscriptionRepository.getAllSubscriptionsByGroupName(period.getGroupName());
+                String draft = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
+                String message = period.getBuilding() == null ?
+                        draft : draft + " in " + period.getBuilding() + " building";
+                subscriptions.forEach(x -> {
+                    try {
+                        bot.sendMessage(message, x.getUser());
+                    } catch (TelegramApiException e) {
+                        LOG.error(e);
+                    }
+                });
+            }).start();
         }
     }
 

@@ -29,17 +29,21 @@ public class PeriodService {
     }
 
     public void addAllFromJson(String json, long userChatId) {
-        List<Period> classes = gson.fromJson(json, PERIOD_LIST_TYPE);
-        List<String> groupNames = groupRepository.getAllUserGroups(userChatId).stream()
-                .map(Group::getName)
-                .collect(Collectors.toList());
-        boolean containsOnlyClassesForGroupThatUserOwn = classes.stream()
-                .map(Period::getGroupName)
-                .allMatch(groupNames::contains);
-        if (!containsOnlyClassesForGroupThatUserOwn) {
-            throw new BotException("Error, the file contains classes for a group that you don't own");
+        try {
+            List<Period> classes = gson.fromJson(json, PERIOD_LIST_TYPE);
+            List<String> groupNames = groupRepository.getAllUserGroups(userChatId).stream()
+                    .map(Group::getName)
+                    .collect(Collectors.toList());
+            boolean containsOnlyClassesForGroupThatUserOwn = classes.stream()
+                    .map(Period::getGroupName)
+                    .allMatch(groupNames::contains);
+            if (!containsOnlyClassesForGroupThatUserOwn) {
+                throw new BotException("Error, the file contains classes for a group that you don't own");
+            }
+            periodRepository.createAll(classes);
+        }catch (IllegalStateException e){
+            throw new BotException("Invalid json");
         }
-        periodRepository.createAll(classes);
     }
 
 }
