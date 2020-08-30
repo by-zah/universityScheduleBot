@@ -1,8 +1,6 @@
 package ua.khnu.entity;
 
 
-import ua.khnu.BotInitializer;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,6 +8,8 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+
+import static ua.khnu.Bot.TIME_ZONE_ID;
 
 @Entity
 @Table(name = "schedule")
@@ -71,7 +71,7 @@ public class ScheduleUnit {
     }
 
     public LocalDateTime getStartLocalDateTime(boolean nextDay) {
-        LocalDateTime localDateTime = LocalDate.now(ZoneId.of(BotInitializer.TIME_ZONE_ID)).atStartOfDay();
+        LocalDateTime localDateTime = LocalDate.now(ZoneId.of(TIME_ZONE_ID)).atStartOfDay();
         localDateTime = localDateTime.plusHours(startHour);
         localDateTime = localDateTime.plusMinutes(startMin);
         localDateTime = nextDay ? localDateTime.plusDays(1) : localDateTime;

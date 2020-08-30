@@ -44,4 +44,16 @@ public class SubscriptionRepository extends AbstractRepository<Subscription> {
         });
         return res.get();
     }
+
+    public List<Subscription> getAllByUserId(long userId) {
+        AtomicReference<List<Subscription>> res = new AtomicReference<>();
+        transaction(session -> {
+            Query<Subscription> query = session
+                    .createQuery("FROM Subscription s WHERE s.user = :userId", Subscription.class);
+            query.setParameter("userId", userId);
+            res.set(query.list());
+        });
+        return res.get();
+    }
+
 }

@@ -8,8 +8,10 @@ import ua.khnu.exception.BotException;
 import ua.khnu.service.PeriodService;
 import ua.khnu.util.FileDownloader;
 
+import static ua.khnu.util.MessageSender.sendMessage;
+
 @Component
-public class AddClassesCommand extends SimpleAnswerCommand {
+public class AddClassesCommand implements FileCommand {
     private final PeriodService service;
 
     @Autowired
@@ -28,7 +30,7 @@ public class AddClassesCommand extends SimpleAnswerCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] strings) {
+    public void processFileMessage(AbsSender absSender, Message message) {
         long chatId = message.getChatId();
         try {
             byte[] content = FileDownloader.getFileContent(absSender, message, "json");

@@ -1,21 +1,22 @@
 package ua.khnu;
 
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ua.khnu.commands.processor.NonCommandProcessor;
 
 public class Bot extends TelegramLongPollingCommandBot {
+    public static final String TIME_ZONE_ID = "Europe/Kiev";
     private final String botToken;
-    private IBotCommand nonCommandProcessor;
+    private NonCommandProcessor nonCommandProcessor;
 
     public Bot() {
         super();
         botToken = System.getenv("BOT_TOKEN");
     }
 
-    public void setNonCommandProcessor(IBotCommand nonCommandProcessor) {
+    public void setNonCommandProcessor(NonCommandProcessor nonCommandProcessor) {
         this.nonCommandProcessor = nonCommandProcessor;
     }
 
@@ -26,7 +27,7 @@ public class Bot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        nonCommandProcessor.processMessage(this, update.getMessage(), null);
+        nonCommandProcessor.process(update);
     }
 
     @Override

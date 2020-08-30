@@ -41,7 +41,7 @@ public class PeriodService {
                 throw new BotException("Error, the file contains classes for a group that you don't own");
             }
             periodRepository.createAll(classes);
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             throw new BotException("Invalid json");
         }
     }

@@ -10,6 +10,8 @@ import ua.khnu.repository.SubscriptionRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.util.MessageParser;
 
+import java.util.List;
+
 @Service
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
@@ -50,5 +52,9 @@ public class SubscriptionService {
         subscription.setUser(userChatId);
         subscription.setGroup(groupName);
         subscriptionRepository.delete(subscription);
+    }
+
+    public List<Subscription> getAllUsersSubscriptions(long userChatId){
+        return subscriptionRepository.getAllByUserId(userChatId);
     }
 }

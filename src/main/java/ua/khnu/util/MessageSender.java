@@ -1,17 +1,22 @@
-package ua.khnu.commands;
+package ua.khnu.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public abstract class SimpleAnswerCommand implements IBotCommand {
-    private static final Logger LOG = LogManager.getLogger(SimpleAnswerCommand.class);
+public final class MessageSender {
+    private static final Logger LOG = LogManager.getLogger(MessageSender.class);
 
-    protected void sendMessage(AbsSender absSender, String messageText, long chatId) {
-        SendMessage reMessage = new SendMessage();
+    private MessageSender() {
+    }
+
+    public static void sendMessage(AbsSender absSender, String messageText, long chatId) {
+        sendMessage(absSender, messageText, chatId, new SendMessage());
+    }
+
+    public static void sendMessage(AbsSender absSender, String messageText, long chatId, SendMessage reMessage) {
         reMessage.setChatId(chatId);
         reMessage.setText(messageText);
         try {
@@ -20,5 +25,5 @@ public abstract class SimpleAnswerCommand implements IBotCommand {
             LOG.error("Can not execute reMessage", e);
         }
     }
-}
 
+}

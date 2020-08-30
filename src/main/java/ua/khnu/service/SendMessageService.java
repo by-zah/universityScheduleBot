@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ua.khnu.Bot;
-import ua.khnu.BotInitializer;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Period;
 import ua.khnu.entity.ScheduleUnit;
@@ -19,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static ua.khnu.Bot.TIME_ZONE_ID;
 
 @Service
 public class SendMessageService {
@@ -52,7 +53,7 @@ public class SendMessageService {
     private List<Period> getCurrentClasses() throws InterruptedException {
         nextDay = false;
         ScheduleUnit nearest = getNearest();
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(BotInitializer.TIME_ZONE_ID));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
         LocalDateTime startLocalDateTime = nearest.getStartLocalDateTime(nextDay);
         Thread.sleep(
                 ChronoUnit.MILLIS.between(now, startLocalDateTime) - TEN_MINUTES_IN_MILLIS
@@ -81,7 +82,7 @@ public class SendMessageService {
     }
 
     private ScheduleUnit getNearest() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(BotInitializer.TIME_ZONE_ID));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
         ScheduleUnit nearest = null;
         long min = Long.MAX_VALUE;
         List<ScheduleUnit> schedule = scheduleContainer.getSchedule();

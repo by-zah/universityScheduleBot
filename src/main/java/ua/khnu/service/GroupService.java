@@ -8,6 +8,7 @@ import ua.khnu.exception.BotException;
 import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,4 +43,7 @@ public class GroupService {
         groupRepository.createOrUpdate(group);
     }
 
+    public List<Group> getAllGroups() {
+        return groupRepository.getAll();
+    }
 }

@@ -33,4 +33,10 @@ public class GroupRepository extends AbstractRepository<Group> {
         });
         return res.get();
     }
+
+    public List<Group> getAll() {
+        AtomicReference<List<Group>> res = new AtomicReference<>();
+        transaction(session -> res.set(session.createQuery("FROM Group ", Group.class).list()));
+        return res.get();
+    }
 }

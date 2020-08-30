@@ -7,8 +7,10 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.exception.BotException;
 import ua.khnu.service.GroupService;
 
+import static ua.khnu.util.MessageSender.sendMessage;
+
 @Component
-public class CreateNewGroupCommand extends SimpleAnswerCommand {
+public class CreateNewGroupCommand implements FileCommand {
     private final GroupService groupService;
 
     @Autowired
@@ -27,7 +29,7 @@ public class CreateNewGroupCommand extends SimpleAnswerCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] strings) {
+    public void processFileMessage(AbsSender absSender, Message message) {
         try {
             groupService.createNewGroup(message.getChatId(), message.getText());
             sendMessage(absSender, "new group created", message.getChatId());

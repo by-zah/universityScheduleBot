@@ -10,8 +10,10 @@ import ua.khnu.exception.BotException;
 import ua.khnu.service.ScheduleService;
 import ua.khnu.util.FileDownloader;
 
+import static ua.khnu.util.MessageSender.sendMessage;
+
 @Component
-public class UpdateScheduleCommand extends SimpleAnswerCommand {
+public class UpdateScheduleCommand implements FileCommand {
     private static final Logger LOG = LogManager.getLogger(UpdateScheduleCommand.class);
     private final ScheduleService service;
     private final Thread scheduleDemon;
@@ -33,7 +35,7 @@ public class UpdateScheduleCommand extends SimpleAnswerCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void processFileMessage(AbsSender absSender, Message message) {
         try {
             byte[] content = FileDownloader.getFileContent(absSender, message, "json");
             service.updateScheduleFromJson(new String(content));

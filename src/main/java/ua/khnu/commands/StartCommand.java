@@ -1,11 +1,14 @@
 package ua.khnu.commands;
 
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import static ua.khnu.util.MessageSender.sendMessage;
+
 @Component
-public class StartCommand extends SimpleAnswerCommand {
+public class StartCommand implements IBotCommand {
 
     @Override
     public String getCommandIdentifier() {
