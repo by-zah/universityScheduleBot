@@ -34,7 +34,7 @@ public class StartCommand implements IBotCommand {
         sendMessage(absSender
                 , "Bot is started, you can /subscribe or"
                         + System.lineSeparator()
-                        + " /unSubscribe to receive or not university schedule updates"
+                        + " /unsubscribe to receive or not university schedule updates"
                 , message.getChatId());
     }
 }
