@@ -38,7 +38,7 @@ public class UpdateScheduleCommand implements FileCommand {
     public void processFileMessage(AbsSender absSender, Message message) {
         try {
             byte[] content = FileDownloader.getFileContent(absSender, message, "json");
-            service.updateScheduleFromJson(new String(content));
+            service.updateScheduleFromJson(new String(content), message.getFrom().getId());
             scheduleDemon.interrupt();
             sendMessage(absSender, "New schedule is successfully set", message.getChatId());
         } catch (BotException e) {

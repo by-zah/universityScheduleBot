@@ -48,7 +48,7 @@ public class PeriodServiceTest {
         userGroups = new ArrayList<>();
         Group group = new Group();
         group.setName(GROUP_NAME);
-        group.setOwner(USER_CHAT_ID);
+        group.setOwnerId(USER_CHAT_ID);
         userGroups.add(group);
     }
 

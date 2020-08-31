@@ -13,8 +13,8 @@ public class Group {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "owner")
-    private long owner;
+    @Column(name = "owner_id")
+    private int ownerId;
 
     public String getName() {
         return name;
@@ -24,11 +24,11 @@ public class Group {
         this.name = name;
     }
 
-    public long getOwner() {
-        return owner;
+    public int getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwner(long owner) {
-        this.owner = owner;
+    public void setOwnerId(int owner) {
+        this.ownerId = owner;
     }
 }

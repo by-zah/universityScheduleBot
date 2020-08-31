@@ -28,10 +28,10 @@ public class PeriodService {
         this.groupRepository = groupRepository;
     }
 
-    public void addAllFromJson(String json, long userChatId) {
+    public void addAllFromJson(String json,int userId) {
         try {
             List<Period> classes = gson.fromJson(json, PERIOD_LIST_TYPE);
-            List<String> groupNames = groupRepository.getAllUserGroups(userChatId).stream()
+            List<String> groupNames = groupRepository.getAllUserGroups(userId).stream()
                     .map(Group::getName)
                     .collect(Collectors.toList());
             boolean containsOnlyClassesForGroupThatUserOwn = classes.stream()

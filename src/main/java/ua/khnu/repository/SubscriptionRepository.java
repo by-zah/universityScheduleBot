@@ -20,13 +20,13 @@ public class SubscriptionRepository extends AbstractRepository<Subscription> {
     }
 
 
-    public Optional<Subscription> getByUserIdAndGroupName(Long userId, String groupName) {
+    public Optional<Subscription> getByUserChatIdAndGroupName(Long userChatId, String groupName) {
         AtomicReference<Optional<Subscription>> res = new AtomicReference<>();
         transaction(session -> {
             Optional<Subscription> subscriptionOptional = session
-                    .createQuery("FROM Subscription s WHERE s.user = :userId and s.group = :group"
+                    .createQuery("FROM Subscription s WHERE s.userChatId = :userChatId and s.group = :group"
                             , Subscription.class)
-                    .setParameter("userId", userId)
+                    .setParameter("userChatId", userChatId)
                     .setParameter("group", groupName)
                     .uniqueResultOptional();
             res.set(subscriptionOptional);
@@ -45,12 +45,12 @@ public class SubscriptionRepository extends AbstractRepository<Subscription> {
         return res.get();
     }
 
-    public List<Subscription> getAllByUserId(long userId) {
+    public List<Subscription> getAllByUserChatId(long userChatId) {
         AtomicReference<List<Subscription>> res = new AtomicReference<>();
         transaction(session -> {
             Query<Subscription> query = session
-                    .createQuery("FROM Subscription s WHERE s.user = :userId", Subscription.class);
-            query.setParameter("userId", userId);
+                    .createQuery("FROM Subscription s WHERE s.userChatId = :userChatId", Subscription.class);
+            query.setParameter("userChatId", userChatId);
             res.set(query.list());
         });
         return res.get();

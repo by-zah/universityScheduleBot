@@ -72,7 +72,7 @@ public class SendMessageService {
                         draft : draft + " in " + period.getBuilding() + " building";
                 subscriptions.forEach(x -> {
                     try {
-                        bot.sendMessage(message, x.getUser());
+                        bot.sendMessage(message, x.getUserChatId());
                     } catch (TelegramApiException e) {
                         LOG.error(e);
                     }

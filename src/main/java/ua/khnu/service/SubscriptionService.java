@@ -3,7 +3,6 @@ package ua.khnu.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.entity.Subscription;
-import ua.khnu.entity.User;
 import ua.khnu.exception.BotException;
 import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.SubscriptionRepository;
@@ -32,29 +31,24 @@ public class SubscriptionService {
         if (!groupRepository.getByGroupName(groupName).isPresent()) {
             throw new BotException("There isn`t group with specified name");
         }
-        if (!userRepository.getById(userChatId).isPresent()) {
-            User user = new User();
-            user.setChatId(userChatId);
-            userRepository.createOrUpdate(user);
-        }
-        if (subscriptionRepository.getByUserIdAndGroupName(userChatId, groupName).isPresent()) {
+        if (subscriptionRepository.getByUserChatIdAndGroupName(userChatId, groupName).isPresent()) {
             throw new BotException("You have been already subscribed");
         }
         Subscription subscription = new Subscription();
         subscription.setGroup(groupName);
-        subscription.setUser(userChatId);
+        subscription.setUserChatId(userChatId);
         subscriptionRepository.createOrUpdate(subscription);
     }
 
     public void unSubscribe(long userChatId, String message) {
         String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", message);
         Subscription subscription = new Subscription();
-        subscription.setUser(userChatId);
+        subscription.setUserChatId(userChatId);
         subscription.setGroup(groupName);
         subscriptionRepository.delete(subscription);
     }
 
     public List<Subscription> getAllUsersSubscriptions(long userChatId){
-        return subscriptionRepository.getAllByUserId(userChatId);
+        return subscriptionRepository.getAllByUserChatId(userChatId);
     }
 }

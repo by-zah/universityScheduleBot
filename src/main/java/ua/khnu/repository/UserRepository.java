@@ -1,6 +1,7 @@
 package ua.khnu.repository;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ua.khnu.entity.User;
@@ -16,9 +17,10 @@ public class UserRepository extends AbstractRepository<User> {
         super(sessionFactory);
     }
 
-    public Optional<User> getById(Long chatId) {
+    public Optional<User> getById(int userId) {
         AtomicReference<Optional<User>> res = new AtomicReference<>();
-        transaction(session -> res.set(session.byId(User.class).loadOptional(chatId)));
+        transaction(session -> res.set(session.byId(User.class).loadOptional(userId)));
         return res.get();
     }
+
 }

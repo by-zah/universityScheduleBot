@@ -23,6 +23,7 @@ public class AppConfig {
         bot.register(context.getBean(StartCommand.class));
         bot.register(context.getBean(SubscribeCommand.class));
         bot.register(context.getBean(UnSubscribeCommand.class));
+        bot.register(context.getBean(CreateNewGroupCommand.class));
         return bot;
     }
 

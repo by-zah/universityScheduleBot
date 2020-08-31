@@ -24,11 +24,11 @@ public class GroupRepository extends AbstractRepository<Group> {
         return res.get();
     }
 
-    public List<Group> getAllUserGroups(long userChatId) {
+    public List<Group> getAllUserGroups(int userId) {
         AtomicReference<List<Group>> res = new AtomicReference<>();
         transaction(session -> {
-            Query<Group> query = session.createQuery("FROM Group g WHERE g.owner= :userChatId", Group.class);
-            query.setParameter("userChatId", userChatId);
+            Query<Group> query = session.createQuery("FROM Group g WHERE g.ownerId= :userId", Group.class);
+            query.setParameter("userId", userId);
             res.set(query.list());
         });
         return res.get();

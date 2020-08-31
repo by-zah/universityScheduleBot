@@ -11,19 +11,19 @@ import java.io.Serializable;
 public class Subscription implements Serializable {
 
     @Id
-    @Column(name = "\"user\"")
-    private long user;
+    @Column(name = "user_chat_id")
+    private long userChatId;
 
     @Id
     @Column(name = "\"group\"")
     private String group;
 
-    public long getUser() {
-        return user;
+    public long getUserChatId() {
+        return userChatId;
     }
 
-    public void setUser(long user) {
-        this.user = user;
+    public void setUserChatId(long userChatId) {
+        this.userChatId = userChatId;
     }
 
     public String getGroup() {

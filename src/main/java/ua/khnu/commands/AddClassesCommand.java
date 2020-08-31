@@ -34,7 +34,7 @@ public class AddClassesCommand implements FileCommand {
         long chatId = message.getChatId();
         try {
             byte[] content = FileDownloader.getFileContent(absSender, message, "json");
-            service.addAllFromJson(new String(content), chatId);
+            service.addAllFromJson(new String(content), message.getFrom().getId());
             sendMessage(absSender, "Classes added", chatId);
         } catch (BotException e) {
             sendMessage(absSender, e.getMessage(), chatId);

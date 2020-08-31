@@ -8,14 +8,29 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
+    @Column(name = "id")
+    private int id;
+
     @Column(name = "chat_id")
     private long chatId;
+
     @Column(name = "local")
     private String local;
+
     @Column(name = "interfaculty_discipline")
     private String interfacultyDiscipline;
+
+    @Column(name = "is_supper")
+    private boolean isSupper;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public long getChatId() {
         return chatId;
@@ -39,5 +54,13 @@ public class User {
 
     public void setInterfacultyDiscipline(String interfacultyDiscipline) {
         this.interfacultyDiscipline = interfacultyDiscipline;
+    }
+
+    public boolean isSupper() {
+        return isSupper;
+    }
+
+    public void setSupper(boolean isSupper) {
+        this.isSupper = isSupper;
     }
 }

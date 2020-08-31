@@ -1,5 +1,6 @@
 package ua.khnu.commands.processor;
 
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.commands.CallBackCommand;
@@ -25,12 +26,13 @@ public class CallBackCommandProcessor implements CommandProcessor<CallBackComman
 
     @Override
     public void process(Update update, AbsSender absSender) {
-        long chatId = update.getCallbackQuery().getMessage().getChatId();
-        String data = update.getCallbackQuery().getData();
+        CallbackQuery callbackQuery = update.getCallbackQuery();
+        long chatId = callbackQuery.getMessage().getChatId();
+        String data = callbackQuery.getData();
         String commandText = data.split(" ")[0];
         Optional<CallBackCommand> command = Optional.ofNullable(commands.get(commandText));
         if (command.isPresent()) {
-            command.get().processCallBackMessage(absSender, data, chatId);
+            command.get().processCallBackMessage(absSender, callbackQuery);
         } else {
             sendMessage(absSender, "Unsupported operation", chatId);
         }
