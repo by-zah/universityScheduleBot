@@ -1,9 +1,8 @@
 package ua.khnu.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.google.gson.Gson;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -29,6 +28,19 @@ public class Period implements Serializable {
 
     @Column(name = "building")
     private String building;
+
+    @Id
+    @Enumerated(EnumType.STRING)
+    @Column(name = "period_type",length = 10)
+    private PeriodType periodType;
+
+    public PeriodType getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(PeriodType periodType) {
+        this.periodType = periodType;
+    }
 
     public String getGroupName() {
         return groupName;
@@ -78,4 +90,5 @@ public class Period implements Serializable {
     public void setBuilding(String building) {
         this.building = building;
     }
+
 }

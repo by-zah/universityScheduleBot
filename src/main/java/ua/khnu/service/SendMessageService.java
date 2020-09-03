@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ua.khnu.Bot;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Period;
+import ua.khnu.entity.PeriodType;
 import ua.khnu.entity.ScheduleUnit;
 import ua.khnu.entity.Subscription;
 import ua.khnu.repository.PeriodRepository;
@@ -17,9 +18,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static ua.khnu.Bot.TIME_ZONE_ID;
+import static ua.khnu.entity.PeriodType.REGULAR;
 
 @Service
 public class SendMessageService {
@@ -59,7 +63,8 @@ public class SendMessageService {
                 ChronoUnit.MILLIS.between(now, startLocalDateTime) - TEN_MINUTES_IN_MILLIS
         );
         DayOfWeek dayOfWeek = LocalDateTime.now().getDayOfWeek();
-        return periodRepository.getPeriodByDayAndIndex(nearest.getIndex(), dayOfWeek);
+
+        return periodRepository.getPeriodByDayAndIndexAndPeriodTypes(nearest.getIndex(), dayOfWeek, REGULAR, getEvenOrOdd());
     }
 
     private void sendNotifications(List<Period> classes) {
@@ -105,4 +110,9 @@ public class SendMessageService {
         }
         return nearest;
     }
+
+    private PeriodType getEvenOrOdd() {
+        return new GregorianCalendar().get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? PeriodType.EVEN_WEEKS : PeriodType.ODD_WEEKS;
+    }
+
 }
