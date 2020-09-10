@@ -73,9 +73,9 @@ public class SendMessageService {
             String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
             message = period.getBuilding() == null ?
                     message : message + " in " + period.getBuilding() + " building";
-            for (Subscription x : subscriptions) {
+            for (Subscription subscription : subscriptions) {
                 try {
-                    bot.sendMessage(message, x.getUserChatId());
+                    bot.sendMessage(message, subscription.getUserChatId());
                     num.incrementAndGet();
                     if (num.get() == 30) {
                         Thread.sleep(ONE_SECOND);
