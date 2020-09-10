@@ -18,7 +18,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PeriodServiceTest {
+class PeriodServiceTest {
     static final String GROUP_NAME = "qwerty";
     public static final int USER_CHAT_ID = 123;
     List<Period> classes;
