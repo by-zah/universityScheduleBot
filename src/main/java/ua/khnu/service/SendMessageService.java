@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ua.khnu.Bot.TIME_ZONE_ID;
 import static ua.khnu.entity.PeriodType.REGULAR;
@@ -30,6 +31,7 @@ public class SendMessageService {
     private static final Logger LOG = LogManager.getLogger(SendMessageService.class);
 
     private static final int TEN_MINUTES_IN_MILLIS = 600000;
+    public static final int ONE_SECOND = 1000;
     private final Bot bot;
     private final ScheduleContainer scheduleContainer;
     private final PeriodRepository periodRepository;
@@ -67,22 +69,27 @@ public class SendMessageService {
         return periodRepository.getPeriodByDayAndIndexAndPeriodTypes(nearest.getIndex(), dayOfWeek, REGULAR, getEvenOrOdd());
     }
 
-    private void sendNotifications(List<Period> classes) {
+
+    private void sendNotifications(List<Period> classes) throws InterruptedException {
+        AtomicInteger num = new AtomicInteger(0);
         for (Period period : classes) {
-            new Thread(() -> {
-                List<Subscription> subscriptions =
-                        subscriptionRepository.getAllSubscriptionsByGroupName(period.getGroupName());
-                String draft = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
-                String message = period.getBuilding() == null ?
-                        draft : draft + " in " + period.getBuilding() + " building";
-                subscriptions.forEach(x -> {
-                    try {
-                        bot.sendMessage(message, x.getUserChatId());
-                    } catch (TelegramApiException e) {
-                        LOG.error(e);
+            List<Subscription> subscriptions =
+                    subscriptionRepository.getAllSubscriptionsByGroupName(period.getGroupName());
+            String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
+            message = period.getBuilding() == null ?
+                    message : message + " in " + period.getBuilding() + " building";
+            for (Subscription x : subscriptions) {
+                try {
+                    bot.sendMessage(message, x.getUserChatId());
+                    num.incrementAndGet();
+                    if (num.get() == 30) {
+                        Thread.sleep(ONE_SECOND);
+                        num.set(0);
                     }
-                });
-            }).start();
+                } catch (TelegramApiException e) {
+                    LOG.error(e);
+                }
+            }
         }
     }
 
