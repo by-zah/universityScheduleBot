@@ -1,7 +1,5 @@
 package ua.khnu.entity;
 
-import com.google.gson.Gson;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
