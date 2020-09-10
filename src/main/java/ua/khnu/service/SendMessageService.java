@@ -51,12 +51,7 @@ public class SendMessageService {
         return !scheduleContainer.getSchedule().isEmpty();
     }
 
-    public void performMailing() throws InterruptedException {
-        List<Period> currentClasses = getCurrentClasses();
-        sendNotifications(currentClasses);
-    }
-
-    private List<Period> getCurrentClasses() throws InterruptedException {
+    public List<Period> getCurrentClasses() throws InterruptedException {
         nextDay = false;
         ScheduleUnit nearest = getNearest();
         LocalDateTime now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
@@ -70,7 +65,7 @@ public class SendMessageService {
     }
 
 
-    private void sendNotifications(List<Period> classes) throws InterruptedException {
+    public void sendNotifications(List<Period> classes) throws InterruptedException {
         AtomicInteger num = new AtomicInteger(0);
         for (Period period : classes) {
             List<Subscription> subscriptions =
