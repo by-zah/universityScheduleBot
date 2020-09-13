@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ua.khnu.Bot.TIME_ZONE_ID;
@@ -36,6 +38,8 @@ public class SendMessageService {
     private final ScheduleContainer scheduleContainer;
     private final PeriodRepository periodRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final ExecutorService executorService;
+
     private boolean nextDay;
 
     @Autowired
@@ -45,6 +49,7 @@ public class SendMessageService {
         this.scheduleContainer = scheduleContainer;
         this.periodRepository = periodRepository;
         this.subscriptionRepository = subscriptionRepository;
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     public boolean isReady() {
@@ -65,27 +70,29 @@ public class SendMessageService {
     }
 
 
-    public void sendNotifications(List<Period> classes) throws InterruptedException {
-        AtomicInteger num = new AtomicInteger(0);
-        for (Period period : classes) {
-            List<Subscription> subscriptions =
-                    subscriptionRepository.getAllSubscriptionsByGroupName(period.getGroupName());
-            String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
-            message = period.getBuilding() == null ?
-                    message : message + " in " + period.getBuilding() + " building";
-            for (Subscription subscription : subscriptions) {
-                try {
-                    bot.sendMessage(message, subscription.getUserChatId());
-                    num.incrementAndGet();
-                    if (num.get() == 30) {
-                        Thread.sleep(ONE_SECOND);
-                        num.set(0);
+    public void sendNotifications(List<Period> classes) {
+        executorService.execute(() -> {
+            AtomicInteger num = new AtomicInteger(0);
+            for (Period period : classes) {
+                List<Subscription> subscriptions =
+                        subscriptionRepository.getAllSubscriptionsByGroupName(period.getGroupName());
+                String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
+                message = period.getBuilding() == null ?
+                        message : message + " in " + period.getBuilding() + " building";
+                for (Subscription subscription : subscriptions) {
+                    try {
+                        bot.sendMessage(message, subscription.getUserChatId());
+                        num.incrementAndGet();
+                        if (num.get() == 30) {
+                            Thread.sleep(ONE_SECOND);
+                            num.set(0);
+                        }
+                    } catch (InterruptedException | TelegramApiException e) {
+                        LOG.error(e);
                     }
-                } catch (TelegramApiException e) {
-                    LOG.error(e);
                 }
             }
-        }
+        });
     }
 
     private ScheduleUnit getNearest() {
