@@ -8,11 +8,14 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.entity.Subscription;
+import ua.khnu.entity.Group;
+import ua.khnu.entity.User;
 import ua.khnu.service.SubscriptionService;
+import ua.khnu.service.UserService;
 import ua.khnu.util.KeyboardBuilder;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ua.khnu.util.MessageSender.sendCallBackAnswer;
@@ -22,11 +25,13 @@ import static ua.khnu.util.MessageSender.sendMessage;
 public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
 
     public static final String COMMAND_IDENTIFIER = "unsubscribe";
-    private final SubscriptionService service;
+    private final SubscriptionService subscriptionService;
+    private final UserService userService;
 
     @Autowired
-    public UnSubscribeCommand(SubscriptionService service) {
-        this.service = service;
+    public UnSubscribeCommand(SubscriptionService subscriptionService, UserService userService) {
+        this.subscriptionService = subscriptionService;
+        this.userService = userService;
     }
 
     @Override
@@ -38,8 +43,8 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
     public void processCallBackMessage(AbsSender absSender, CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
         String callBackQueryId = callbackQuery.getId();
-        service.unSubscribe(chatId, callbackQuery.getData());
-        sendMessage(absSender, "You are successfully unsubscribed", chatId);
+        subscriptionService.unSubscribe(chatId, callbackQuery.getData());
+        sendMessage(absSender, chatId, "You are successfully unsubscribed");
         sendCallBackAnswer(absSender, callBackQueryId);
     }
 
@@ -50,18 +55,23 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        List<Subscription> subscriptions = service.getAllUsersSubscriptions(message.getChatId());
+        Optional<User> user = userService.getUserById(message.getFrom().getId());
+        if (!user.isPresent()) {
+            sendMessage(absSender, message.getChatId(), "You aren't registered");
+            return;
+        }
+        List<Group> subscriptions = user.get().getGroups();
         if (subscriptions.isEmpty()) {
-            sendMessage(absSender, "You are not subscribed to any of the groups", message.getChatId());
+            sendMessage(absSender, message.getChatId(), "You are not subscribed to any of the groups");
             return;
         }
         SendMessage sendMessage = new SendMessage();
         InlineKeyboardMarkup inlineKeyboardMarkup = KeyboardBuilder
                 .buildInlineKeyboard("/" + COMMAND_IDENTIFIER,
                         subscriptions.stream()
-                                .map(Subscription::getGroup)
+                                .map(Group::getName)
                                 .collect(Collectors.toList()));
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage(absSender, "Select the group, you want to unsubscribe", message.getChatId(), sendMessage);
+        sendMessage(absSender, message.getChatId(), "Select the group, you want to unsubscribe", sendMessage);
     }
 }

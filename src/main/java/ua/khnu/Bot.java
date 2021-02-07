@@ -1,22 +1,26 @@
 package ua.khnu;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ua.khnu.commands.processor.NonCommandProcessor;
+import ua.khnu.service.MailingService;
 
+import java.util.List;
+
+@Component
 public class Bot extends TelegramLongPollingCommandBot {
-    public static final String TIME_ZONE_ID = "Europe/Kiev";
     private final String botToken;
-    private NonCommandProcessor nonCommandProcessor;
+    private final NonCommandProcessor nonCommandProcessor;
 
-    public Bot() {
+    @Autowired
+    public Bot(List<IBotCommand> commands, MailingService mailingService, NonCommandProcessor nonCommandProcessor) {
         super();
         botToken = System.getenv("BOT_TOKEN");
-    }
-
-    public void setNonCommandProcessor(NonCommandProcessor nonCommandProcessor) {
+        commands.forEach(this::register);
+        mailingService.setBot(this);
         this.nonCommandProcessor = nonCommandProcessor;
     }
 
@@ -27,18 +31,11 @@ public class Bot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        nonCommandProcessor.process(update);
+        nonCommandProcessor.process(update, this);
     }
 
     @Override
     public String getBotToken() {
         return botToken;
-    }
-
-    public void sendMessage(String text, long chatId) throws TelegramApiException {
-        SendMessage message = new SendMessage();
-        message.setText(text);
-        message.setChatId(chatId);
-        execute(message);
     }
 }

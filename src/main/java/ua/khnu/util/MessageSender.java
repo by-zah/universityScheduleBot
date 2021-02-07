@@ -14,12 +14,12 @@ public final class MessageSender {
     private MessageSender() {
     }
 
-    public static void sendMessage(AbsSender absSender, String messageText, long chatId) {
-        sendMessage(absSender, messageText, chatId, new SendMessage());
+    public static void sendMessage(AbsSender absSender, long chatId, String messageText) {
+        sendMessage(absSender, chatId, messageText, new SendMessage());
     }
 
-    public static void sendMessage(AbsSender absSender, String messageText, long chatId, SendMessage reMessage) {
-        reMessage.setChatId(chatId);
+    public static void sendMessage(AbsSender absSender, long chatId, String messageText, SendMessage reMessage) {
+        reMessage.setChatId(String.valueOf(chatId));
         reMessage.setText(messageText);
         execute(absSender, reMessage);
     }

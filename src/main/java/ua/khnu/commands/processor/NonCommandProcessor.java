@@ -1,42 +1,27 @@
 package ua.khnu.commands.processor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ua.khnu.Bot;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static ua.khnu.util.MessageSender.sendMessage;
 
+@Component
 public class NonCommandProcessor {
-    private final List<CommandProcessor<?>> processors;
-    private final Bot bot;
+    private final List<CommandProcessor> processors;
 
-    public NonCommandProcessor(Bot bot) {
-        processors = new ArrayList<>();
-        this.bot = bot;
+    @Autowired
+    public NonCommandProcessor(List<CommandProcessor> processors) {
+        this.processors = processors;
     }
 
-    @PostConstruct
-    private void setToBot() {
-        bot.setNonCommandProcessor(this);
-    }
-
-    public void registerProcessor(CommandProcessor<?> processor) {
-        processors.add(processor);
-    }
-
-
-    public void process(Update update) {
-        Optional<CommandProcessor<?>> processor = processors.stream()
+    public void process(Update update, AbsSender absSender) {
+        processors.stream()
                 .filter(p -> p.getCondition().test(update))
-                .findAny();
-        if (processor.isPresent()) {
-            processor.get().process(update, bot);
-        } else {
-            sendMessage(bot, "Unsupported command", update.getMessage().getChatId());
-        }
+                .findAny().ifPresentOrElse(p -> p.process(update, absSender),
+                () -> sendMessage(absSender, update.getMessage().getChatId(), "Unsupported command"));
     }
 }

@@ -37,13 +37,13 @@ public class UpdateScheduleCommand implements FileCommand {
     @Override
     public void processFileMessage(AbsSender absSender, Message message) {
         try {
-            byte[] content = FileDownloader.getFileContent(absSender, message, "json");
-            service.updateScheduleFromJson(new String(content), message.getFrom().getId());
+            var file = FileDownloader.getFileContent(absSender, message, "json");
+            service.updateScheduleFromJson(file.getContent(), message.getFrom().getId());
             scheduleDemon.interrupt();
-            sendMessage(absSender, "New schedule is successfully set", message.getChatId());
+            sendMessage(absSender, message.getChatId(), "New schedule is successfully set");
         } catch (BotException e) {
             LOG.error(e);
-            sendMessage(absSender, e.getMessage(), message.getChatId());
+            sendMessage(absSender, message.getChatId(), e.getMessage());
         }
     }
 }

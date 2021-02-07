@@ -17,8 +17,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -43,6 +43,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -111,5 +112,18 @@
             <artifactId>log4j-core</artifactId>
             <version>2.13.3</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>2.3.6.RELEASE</version>
+        </dependency>
+
     </dependencies>
 </project>

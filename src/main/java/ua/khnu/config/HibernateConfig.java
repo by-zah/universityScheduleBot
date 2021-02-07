@@ -1,21 +1,35 @@
 package ua.khnu.config;
 
-import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ua.khnu.entity.*;
 
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.util.Properties;
 
+
 @Configuration
+@EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "ua.khnu.repository")
 public class HibernateConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        return new DriverManagerDataSource(System.getenv("DATABASE_URL"));
+    }
 
 
     @Bean
-    public SessionFactory sessionFactory() {
+    public EntityManagerFactory entityManagerFactory() {
         org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
         Properties settings = new Properties();
         settings.put(Environment.DRIVER, "org.postgresql.Driver");
@@ -37,5 +51,13 @@ public class HibernateConfig {
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
         return configuration.buildSessionFactory(serviceRegistry);
+    }
+
+    @Bean
+    @Autowired
+    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(entityManagerFactory);
+        return txManager;
     }
 }

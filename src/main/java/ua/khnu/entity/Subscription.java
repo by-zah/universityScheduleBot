@@ -1,36 +1,31 @@
 package ua.khnu.entity;
 
-import javax.persistence.Column;
+import ua.khnu.entity.pk.SubscriptionPK;
+
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "subscriptions")
-public class Subscription implements Serializable {
+public class Subscription {
 
-    @Id
-    @Column(name = "user_chat_id")
-    private long userChatId;
-
-    @Id
-    @Column(name = "\"group\"")
-    private String group;
+    @EmbeddedId
+    private SubscriptionPK id;
 
     public long getUserChatId() {
-        return userChatId;
+        return id.getUserChatId();
     }
 
     public void setUserChatId(long userChatId) {
-        this.userChatId = userChatId;
+        id.setUserChatId(userChatId);
     }
 
     public String getGroup() {
-        return group;
+        return id.getGroup();
     }
 
     public void setGroup(String group) {
-        this.group = group;
+        id.setGroup(group);
     }
 }

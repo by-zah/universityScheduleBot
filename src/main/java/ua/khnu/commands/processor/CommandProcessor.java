@@ -5,10 +5,9 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.function.Predicate;
 
-public interface CommandProcessor<T> {
+public interface CommandProcessor {
     Predicate<Update> getCondition();
 
     void process(Update update, AbsSender absSender);
 
-    void registerCommand(T command);
 }

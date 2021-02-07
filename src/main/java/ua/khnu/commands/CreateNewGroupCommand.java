@@ -38,9 +38,9 @@ public class CreateNewGroupCommand implements IBotCommand {
             Integer userId = message.getFrom().getId();
             userService.createOrUpdate(userId,message.getChatId());
             groupService.createNewGroup(userId, message.getText());
-            sendMessage(absSender, "new group created", message.getChatId());
+            sendMessage(absSender, message.getChatId(), "new group created");
         } catch (BotException e) {
-            sendMessage(absSender, e.getMessage(), message.getChatId());
+            sendMessage(absSender, message.getChatId(), e.getMessage());
         }
     }
 }

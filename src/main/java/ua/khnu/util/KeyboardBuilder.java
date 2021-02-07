@@ -15,9 +15,10 @@ public final class KeyboardBuilder {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (String arg : args) {
-            row.add(new InlineKeyboardButton()
-                    .setText(arg)
-                    .setCallbackData(commandIdentifier + " " + arg));
+            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+            inlineKeyboardButton.setText(arg);
+            inlineKeyboardButton.setCallbackData(commandIdentifier + " " + arg);
+            row.add(inlineKeyboardButton);
             if (row.size() > 2) {
                 rowList.add(row);
                 row = new ArrayList<>();

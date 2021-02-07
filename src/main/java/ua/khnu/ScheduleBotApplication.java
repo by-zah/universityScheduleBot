@@ -2,28 +2,31 @@ package ua.khnu;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.telegram.telegrambots.ApiContextInitializer;
+import org.springframework.context.annotation.ComponentScan;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 //TODO add localization
+
+@ComponentScan
 public class ScheduleBotApplication {
     private static final Logger LOG = LogManager.getLogger(ScheduleBotApplication.class);
+    private static ApplicationContext context;
 
     public static void main(String[] args) {
-        LOG.info("Initializing API context...");
-        ApiContextInitializer.init();
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.scan("ua.khnu");
-        ctx.refresh();
-        Bot bot = ctx.getBean(Bot.class);
-        TelegramBotsApi botsApi = new TelegramBotsApi();
+        context = new AnnotationConfigApplicationContext(ScheduleBotApplication.class);
+        startBot();
+    }
+
+    private static void startBot() {
         try {
             LOG.info("Registering Bot...");
-            botsApi.registerBot(bot);
+            new TelegramBotsApi(DefaultBotSession.class).registerBot(context.getBean(Bot.class));
             LOG.info("Bot bot is ready for work!");
-        } catch (TelegramApiRequestException e) {
+        } catch (TelegramApiException e) {
             LOG.error("Error while initializing bot!", e);
         }
     }

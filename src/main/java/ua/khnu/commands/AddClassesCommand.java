@@ -8,15 +8,17 @@ import ua.khnu.exception.BotException;
 import ua.khnu.service.PeriodService;
 import ua.khnu.util.FileDownloader;
 
+import java.util.List;
+
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
 public class AddClassesCommand implements FileCommand {
-    private final PeriodService service;
+    private final PeriodService periodService;
 
     @Autowired
-    public AddClassesCommand(PeriodService service) {
-        this.service = service;
+    public AddClassesCommand(PeriodService periodService) {
+        this.periodService = periodService;
     }
 
     @Override
@@ -33,11 +35,11 @@ public class AddClassesCommand implements FileCommand {
     public void processFileMessage(AbsSender absSender, Message message) {
         long chatId = message.getChatId();
         try {
-            byte[] content = FileDownloader.getFileContent(absSender, message, "json");
-            service.addAllFromJson(new String(content), message.getFrom().getId());
-            sendMessage(absSender, "Classes added", chatId);
+            var file = FileDownloader.getFileContent(absSender, message, List.of("json", "csv"));
+            periodService.addAll(file, message.getFrom().getId());
+            sendMessage(absSender, chatId, "Classes added");
         } catch (BotException e) {
-            sendMessage(absSender, e.getMessage(), chatId);
+            sendMessage(absSender, chatId, e.getMessage());
         }
     }
 }

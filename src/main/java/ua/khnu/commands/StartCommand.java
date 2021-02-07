@@ -32,9 +32,9 @@ public class StartCommand implements IBotCommand {
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         userService.createOrUpdate(message.getFrom().getId(), message.getChatId());
         sendMessage(absSender
-                , "Bot is started, you can /subscribe or"
+                , message.getChatId(), "Bot is started, you can /subscribe or"
                         + System.lineSeparator()
                         + " /unsubscribe to receive or not university schedule updates"
-                , message.getChatId());
+        );
     }
 }

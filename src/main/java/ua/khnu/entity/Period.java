@@ -1,22 +1,16 @@
 package ua.khnu.entity;
 
+import ua.khnu.entity.pk.PeriodPK;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.DayOfWeek;
 
 @Entity
 @Table(name = "classes")
 public class Period implements Serializable {
-    @Id
-    @Column(name = "group_name")
-    private String groupName;
-
-    @Id
-    @Column(name = "index")
-    private int index;
-
-    @Id
-    @Column(name = "day")
-    private int day;
+    @EmbeddedId
+    private PeriodPK id;
 
     @Column(name = "name")
     private String name;
@@ -27,43 +21,57 @@ public class Period implements Serializable {
     @Column(name = "building")
     private String building;
 
-    @Id
-    @Enumerated(EnumType.STRING)
-    @Column(name = "period_type",length = 10)
-    private PeriodType periodType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_name", insertable = false, updatable = false)
+    private Group group;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "index", insertable = false, updatable = false)
+    private ScheduleUnit scheduleUnit;
+
+    public Period() {
+        this.id = new PeriodPK();
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public ScheduleUnit getScheduleUnit() {
+        return scheduleUnit;
+    }
 
     public PeriodType getPeriodType() {
-        return periodType;
+        return id.getPeriodType();
     }
 
     public void setPeriodType(PeriodType periodType) {
-        this.periodType = periodType;
+        id.setPeriodType(periodType);
     }
 
     public String getGroupName() {
-        return groupName;
+        return id.getGroupName();
     }
 
     public void setGroupName(String groupName) {
-        this.groupName = groupName;
+        id.setGroupName(groupName);
     }
 
     public int getIndex() {
-        return index;
+        return id.getIndex();
     }
 
     public void setIndex(int index) {
-        this.index = index;
+        id.setIndex(index);
     }
 
-    public int getDay() {
-        return day;
+    public DayOfWeek getDay() {
+        return id.getDay();
     }
 
-    public void setDay(int day) {
-        this.day = day;
+    public void setDay(DayOfWeek day) {
+        id.setDay(day);
     }
-
 
     public String getName() {
         return name;
@@ -89,4 +97,15 @@ public class Period implements Serializable {
         this.building = building;
     }
 
+    @Override
+    public String toString() {
+        return "Period{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", roomNumber='" + roomNumber + '\'' +
+                ", building='" + building + '\'' +
+                ", group=" + group +
+                ", scheduleUnit=" + scheduleUnit +
+                '}';
+    }
 }

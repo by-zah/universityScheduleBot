@@ -1,9 +1,7 @@
 package ua.khnu.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +21,34 @@ public class User {
 
     @Column(name = "is_supper")
     private boolean isSupper;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "subscriptions",
+            joinColumns = {@JoinColumn(name = "user_chat_id")},
+            inverseJoinColumns = {@JoinColumn(name = "\"group\"")}
+    )
+    private List<Group> groups;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<Group> groupsUserOwn;
+
+    public List<Group> getGroupsUserOwn() {
+        return groupsUserOwn;
+    }
+
+    public void setGroupsUserOwn(List<Group> groupsUserOwn) {
+        this.groupsUserOwn = groupsUserOwn;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
 
     public int getId() {
         return id;
