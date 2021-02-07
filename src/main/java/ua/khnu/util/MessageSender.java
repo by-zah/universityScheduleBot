@@ -34,7 +34,7 @@ public final class MessageSender {
         try {
             absSender.execute(apiMethod);
         } catch (TelegramApiException e) {
-            LOG.error("Can not execute reMessage", e);
+            LOG.error("Can not execute reMessage {}",apiMethod, e);
         }
     }
 }
