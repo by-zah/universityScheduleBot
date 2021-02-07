@@ -34,7 +34,7 @@ public class GetUsersScheduleCommand implements IBotCommand {
 
     @Override
     public String getCommandIdentifier() {
-        return "getSchedule";
+        return "schedule";
     }
 
     @Override
