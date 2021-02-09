@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ua.khnu.entity.PeriodType.REGULAR;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 import static ua.khnu.util.MessageSender.sendMessage;
 
@@ -63,7 +64,7 @@ public class GetUsersScheduleCommand implements IBotCommand {
         groups.forEach(group -> {
             List<Period> periods = group.getPeriods().stream()
                     .filter(period -> Objects.equals(period.getDay(), LocalDate.now(ZoneId.of(TIME_ZONE_ID)).getDayOfWeek())
-                            && periodService.getEvenOrOdd().equals(period.getPeriodType()))
+                            && (REGULAR.equals(period.getPeriodType()) || periodService.getEvenOrOdd().equals(period.getPeriodType())))
                     .collect(Collectors.toList());
             if (!periods.isEmpty()) {
                 messageParts.add(buildMessage(group, periods));
