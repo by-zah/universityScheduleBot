@@ -1,5 +1,6 @@
 package ua.khnu.util;
 
+import com.google.common.collect.ImmutableMap;
 import ua.khnu.exception.CsvException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,12 +10,36 @@ import java.util.stream.Collectors;
 
 public class Csv {
     private final Map<Class<?>, Function<String, ?>> classCast;
+    private final String valueSeparator;
+    private final String rowSeparator;
+
+    public Csv(String valueSeparator, String rowSeparator) {
+        this.valueSeparator = valueSeparator;
+        this.rowSeparator = rowSeparator;
+
+        classCast = ImmutableMap.<Class<?>, Function<String, ?>>builder()
+                .put(int.class, Integer::parseInt)
+                .put(Integer.class, Integer::parseInt)
+                .put(double.class, Double::parseDouble)
+                .put(Double.class, Double::parseDouble)
+                .put(byte.class, Byte::parseByte)
+                .put(Byte.class, Byte::parseByte)
+                .put(char.class, s -> s.charAt(0))
+                .put(Character.class, s -> s.charAt(0))
+                .put(Short.class, Short::parseShort)
+                .put(short.class, Short::parseShort)
+                .put(Long.class, Long::parseLong)
+                .put(long.class, Long::parseLong)
+                .put(Float.class, Float::parseFloat)
+                .put(float.class, Float::parseFloat)
+                .put(Boolean.class, Boolean::parseBoolean)
+                .put(boolean.class, Boolean::parseBoolean)
+                .put(String.class, s -> s)
+                .build();
+    }
 
     public Csv() {
-        classCast = new HashMap<>();
-        classCast.put(int.class, Integer::parseInt);
-        classCast.put(String.class, s -> s);
-        classCast.put(double.class, Double::parseDouble);
+        this(",", "\n");
     }
 
     public <T> List<T> read(String csv, Class<T> targetClass) {
@@ -79,18 +104,19 @@ public class Csv {
     }
 
     private String[] getHeaders(String csv) {
-        String[] rows = csv.split("\n");
+        String[] rows = csv.split(rowSeparator);
         if (rows[0].isEmpty()) {
             throw new CsvException("Empty rows line");
         }
-        return rows[0].split(",");
+        return rows[0].split(valueSeparator);
     }
 
     private List<String[]> getBody(String csv) {
-        final var body = Arrays.stream(csv.split("\n"))
-                .map(row -> row.split(","))
+        return Arrays.stream(csv.split(rowSeparator))
+                //skip header row
+                .skip(1)
+                .map(row -> row.split(valueSeparator))
                 .collect(Collectors.toList());
-        return body.subList(1, body.size());
     }
 
     private void validateLengths(String[] headers, List<String[]> body) {

@@ -95,7 +95,7 @@ public class PeriodService {
         periodRepository.deleteAll(periods);
     }
 
-    private PeriodType getEvenOrOdd() {
+    public PeriodType getEvenOrOdd() {
         return new GregorianCalendar().get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? PeriodType.EVEN_WEEKS : PeriodType.ODD_WEEKS;
     }
 

@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.entity.Group;
 import ua.khnu.entity.Period;
+import ua.khnu.service.PeriodService;
 import ua.khnu.service.UserService;
 
 import javax.transaction.Transactional;
@@ -26,10 +27,12 @@ public class GetUsersScheduleCommand implements IBotCommand {
     private static final String MESSAGE_TEMPLATE = "Here are today's %s classes:%n%s";
     private static final String CLASS_TEMPLATE = "%s. %s (%s)%n";
     private final UserService userService;
+    private final PeriodService periodService;
 
     @Autowired
-    public GetUsersScheduleCommand(UserService userService) {
+    public GetUsersScheduleCommand(UserService userService, PeriodService periodService) {
         this.userService = userService;
+        this.periodService = periodService;
     }
 
     @Override
@@ -59,7 +62,8 @@ public class GetUsersScheduleCommand implements IBotCommand {
         }
         groups.forEach(group -> {
             List<Period> periods = group.getPeriods().stream()
-                    .filter(period -> Objects.equals(period.getDay(), LocalDate.now(ZoneId.of(TIME_ZONE_ID)).getDayOfWeek()))
+                    .filter(period -> Objects.equals(period.getDay(), LocalDate.now(ZoneId.of(TIME_ZONE_ID)).getDayOfWeek())
+                            && periodService.getEvenOrOdd().equals(period.getPeriodType()))
                     .collect(Collectors.toList());
             if (!periods.isEmpty()) {
                 messageParts.add(buildMessage(group, periods));

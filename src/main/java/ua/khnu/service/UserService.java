@@ -18,6 +18,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public void createOrUpdate(int userId, long chatId) {
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty() || userOpt.get().getChatId() != chatId) {
