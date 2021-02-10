@@ -11,6 +11,7 @@
         <spring.ver>5.2.5.RELEASE</spring.ver>
         <hibernate-version>5.3.7.Final</hibernate-version>
     </properties>
+    <packaging>jar</packaging>
     <build>
         <plugins>
             <plugin>
@@ -29,7 +30,7 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>main.ua.khnu.ScheduleBotApplication</mainClass>
+                            <mainClass>ua.khnu.ScheduleBotApplication</mainClass>
                             <name>workerBot</name>
                         </program>
                     </programs>
