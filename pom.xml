@@ -29,7 +29,7 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>ua.khnu.ScheduleBotApplication</mainClass>
+                            <mainClass>main.ua.khnu.ScheduleBotApplication</mainClass>
                             <name>workerBot</name>
                         </program>
                     </programs>
