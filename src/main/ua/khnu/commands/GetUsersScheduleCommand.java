@@ -11,21 +11,20 @@ import ua.khnu.service.PeriodService;
 import ua.khnu.service.UserService;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static ua.khnu.entity.PeriodType.REGULAR;
-import static ua.khnu.util.Constants.TIME_ZONE_ID;
+import static java.util.stream.Collectors.groupingBy;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
 public class GetUsersScheduleCommand implements IBotCommand {
-    private static final String MESSAGE_TEMPLATE = "Here are today's %s classes:%n%s";
+    private static final String MESSAGE_TEMPLATE = "Here are %s's %s classes:%n%s";
     private static final String CLASS_TEMPLATE = "%s. %s (%s)%n";
     private final UserService userService;
     private final PeriodService periodService;
@@ -47,43 +46,22 @@ public class GetUsersScheduleCommand implements IBotCommand {
     }
 
     @Override
-    @Transactional
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        var user = userService.getUserById(message.getFrom().getId());
-        if (user.isEmpty()) {
-            sendMessage(absSender, message.getChatId(), "You aren't registered");
-            return;
-        }
-        var chatId = message.getChatId();
         List<String> messageParts = new ArrayList<>();
-        var groups = user.get().getGroups();
-        if (groups.isEmpty()) {
-            sendMessage(absSender, chatId, "You don't subscribe to any group, use /subscribe to choose one or more");
-            return;
-        }
-        groups.forEach(group -> {
-            List<Period> periods = group.getPeriods().stream()
-                    .filter(period -> Objects.equals(period.getDay(), LocalDate.now(ZoneId.of(TIME_ZONE_ID)).getDayOfWeek())
-                            && (REGULAR.equals(period.getPeriodType()) || periodService.getEvenOrOdd().equals(period.getPeriodType())))
-                    .collect(Collectors.toList());
-            if (!periods.isEmpty()) {
-                messageParts.add(buildMessage(group, periods));
-            }
-        });
-        if (messageParts.isEmpty()) {
-            sendMessage(absSender, chatId, "There aren't any classes today");
-        } else {
-            sendMessage(absSender, chatId, messageParts.stream().collect(Collectors.joining(System.lineSeparator())));
-        }
+        periodService.getUpcomingUserClasses(message.getFrom().getId()).stream()
+                .collect(groupingBy(Period::getGroup))
+                .forEach((group, classes) -> messageParts.add(buildMessage(group, classes)));
+        sendMessage(absSender, message.getChatId(), messageParts.stream().collect(Collectors.joining(System.lineSeparator())));
     }
 
     private String buildMessage(Group group, List<Period> periods) {
         StringBuilder classesBuilder = new StringBuilder();
+        var day = periods.get(0).getDay().getDisplayName(TextStyle.FULL, Locale.US).toLowerCase();
         periods.stream()
                 .sorted(Comparator.comparing(Period::getIndex))
                 .forEach(period -> classesBuilder.append(String.format(CLASS_TEMPLATE,
                         period.getIndex(), period.getName(), period.getScheduleUnit().toString())));
-        return String.format(MESSAGE_TEMPLATE, group.getName(), classesBuilder.toString());
+        return String.format(MESSAGE_TEMPLATE, day, group.getName(), classesBuilder.toString());
     }
 
 }

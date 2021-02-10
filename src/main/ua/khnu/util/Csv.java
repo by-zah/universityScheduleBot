@@ -1,6 +1,7 @@
 package ua.khnu.util;
 
 import com.google.common.collect.ImmutableMap;
+import org.springframework.stereotype.Component;
 import ua.khnu.exception.CsvException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +9,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Component
 public class Csv {
     private final Map<Class<?>, Function<String, ?>> classCast;
     private final String valueSeparator;

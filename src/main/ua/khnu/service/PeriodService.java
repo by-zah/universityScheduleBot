@@ -1,5 +1,6 @@
 package ua.khnu.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,26 @@ import ua.khnu.repository.PeriodRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.util.Csv;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.lang.reflect.Type;
 import java.time.DayOfWeek;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static ua.khnu.entity.PeriodType.REGULAR;
+import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 @Service
 public class PeriodService {
     public static final Type PERIOD_LIST_TYPE = TypeToken.getParameterized(List.class, Period.class).getType();
+    private static final int DAYS_IN_WEEK = 7;
     private final PeriodRepository periodRepository;
     private final Gson gson;
     private final UserRepository userRepository;
@@ -32,18 +42,42 @@ public class PeriodService {
     private final Csv csvParser;
 
     @Autowired
-    public PeriodService(PeriodRepository periodRepository, Gson gson, UserRepository userRepository) {
+    public PeriodService(PeriodRepository periodRepository, Gson gson, UserRepository userRepository, Csv csvParser) {
         this.periodRepository = periodRepository;
         this.gson = gson;
         this.userRepository = userRepository;
-        this.parsers = new HashMap<>();
-        csvParser = new Csv();
+        this.csvParser = csvParser;
+        this.parsers = ImmutableMap.<String, Function<String, List<Period>>>builder()
+                .put("json", this::parseJson)
+                .put("csv", this::parseCsv)
+                .build();
     }
 
-    @PostConstruct
-    private void initParsers() {
-        parsers.put("json", this::parseJson);
-        parsers.put("csv", this::parseCsv);
+    @Transactional
+    public List<Period> getUpcomingUserClasses(int userId) {
+        var groups = userRepository.findById(userId)
+                .orElseThrow(() -> new BotException("You aren't registered"))
+                .getGroups();
+        if (groups.isEmpty()) {
+            throw new BotException("You don't subscribe to any group, use /subscribe to choose one or more");
+        }
+        var now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
+        var calls = 0;
+        List<Period> classes;
+        do {
+            final var finalNow = now;
+            classes = periodRepository.findByGroupInAndDay(groups, now.getDayOfWeek())
+                    .stream()
+                    .filter(period -> REGULAR.equals(period.getPeriodType()) || getEvenOrOdd().equals(period.getPeriodType()))
+                    .filter(period -> ChronoUnit.MILLIS.between(finalNow, period.getScheduleUnit().getStartLocalDateTime()) > 0)
+                    .collect(Collectors.toList());
+            now = now.plusDays(1);
+            calls++;
+            if (calls >= DAYS_IN_WEEK) {
+                throw new BotException("There aren't any classes yet");
+            }
+        } while (classes.isEmpty());
+        return classes;
     }
 
     @Transactional
@@ -88,7 +122,7 @@ public class PeriodService {
 
     @Transactional
     public List<Period> getPeriodByDayAndIndex(int periodIndex, DayOfWeek dayOfWeek) {
-        return periodRepository.findAllByIdIndexAndIdDayAndIdPeriodTypeIn(periodIndex, dayOfWeek, List.of(getEvenOrOdd(), PeriodType.REGULAR));
+        return periodRepository.findAllByIdIndexAndIdDayAndIdPeriodTypeIn(periodIndex, dayOfWeek, List.of(getEvenOrOdd(), REGULAR));
     }
 
     public void removeAll(List<Period> periods) {
