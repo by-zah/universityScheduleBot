@@ -66,7 +66,7 @@ public class PeriodService {
         List<Period> classes;
         do {
             final var finalNow = now;
-            classes = periodRepository.findByGroupInAndDay(groups, now.getDayOfWeek())
+            classes = periodRepository.findByGroupInAndIdDay(groups, now.getDayOfWeek())
                     .stream()
                     .filter(period -> REGULAR.equals(period.getPeriodType()) || getEvenOrOdd().equals(period.getPeriodType()))
                     .filter(period -> ChronoUnit.MILLIS.between(finalNow, period.getScheduleUnit().getStartLocalDateTime()) > 0)

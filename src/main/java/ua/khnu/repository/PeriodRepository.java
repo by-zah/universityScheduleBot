@@ -16,5 +16,5 @@ public interface PeriodRepository extends JpaRepository<Period, PeriodPK> {
 
     List<Period> findAllByIdIndexAndIdDayAndIdPeriodTypeIn(int index, DayOfWeek day, List<PeriodType> periodTypes);
 
-    List<Period> findByGroupInAndDay(List<Group> groups, DayOfWeek day);
+    List<Period> findByGroupInAndIdDay(List<Group> groups, DayOfWeek day);
 }

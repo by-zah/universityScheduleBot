@@ -80,7 +80,7 @@ public class PeriodServiceTest {
         //when, then
         assertThrows(BotException.class, () -> periodService.getUpcomingUserClasses(userId));
         verify(user, times(1)).getGroups();
-        verify(periodRepository, times(7)).findByGroupInAndDay(anyList(), any(DayOfWeek.class));
+        verify(periodRepository, times(7)).findByGroupInAndIdDay(anyList(), any(DayOfWeek.class));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class PeriodServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(scheduleUnit.getStartLocalDateTime()).thenReturn(now.plusHours(1));
         var expectedClasses = ImmutableList.of(period);
-        when(periodRepository.findByGroupInAndDay(anyList(), eq(now.getDayOfWeek())))
+        when(periodRepository.findByGroupInAndIdDay(anyList(), eq(now.getDayOfWeek())))
                 .thenReturn(expectedClasses);
 
         //when
@@ -106,6 +106,6 @@ public class PeriodServiceTest {
         //then
         Assert.assertEquals(classes, expectedClasses);
         verify(user, times(1)).getGroups();
-        verify(periodRepository, times(2)).findByGroupInAndDay(anyList(), any(DayOfWeek.class));
+        verify(periodRepository, times(2)).findByGroupInAndIdDay(anyList(), any(DayOfWeek.class));
     }
 }
