@@ -17,6 +17,9 @@ import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
 public class SendToAll implements IBotCommand {
+    private static final String COMMAND_IDENTIFIER = "sendToAll";
+    private static final int MESSAGE_OFFSET = COMMAND_IDENTIFIER.length() + 2;
+
     private final UserService userService;
     private final MailingService mailingService;
 
@@ -28,7 +31,7 @@ public class SendToAll implements IBotCommand {
 
     @Override
     public String getCommandIdentifier() {
-        return "sendToAll";
+        return COMMAND_IDENTIFIER;
     }
 
     @Override
@@ -39,7 +42,8 @@ public class SendToAll implements IBotCommand {
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         long chatId = message.getChatId();
-        if (arguments.length < 1) {
+        var messageText = message.getText().substring(MESSAGE_OFFSET);
+        if (messageText.length() < 1) {
             sendMessage(absSender, chatId, "Can`t send empty message");
             return;
         }
@@ -49,7 +53,6 @@ public class SendToAll implements IBotCommand {
             sendMessage(absSender, chatId, "You are not allow to do it");
             return;
         }
-        String messageText = String.join(" ", arguments);
         try {
             mailingService.sendMailingMessages(userService.getAllUsers().stream()
                     .map(user -> new MessageForQueue(messageText, user.getChatId()))
