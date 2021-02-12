@@ -12,6 +12,7 @@ import ua.khnu.entity.*;
 import ua.khnu.exception.BotException;
 import ua.khnu.repository.PeriodRepository;
 import ua.khnu.repository.UserRepository;
+import ua.khnu.service.impl.PeriodServiceImpl;
 import ua.khnu.util.Csv;
 
 import java.time.DayOfWeek;
@@ -27,7 +28,7 @@ import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 public class PeriodServiceTest {
     @InjectMocks
-    private PeriodService periodService;
+    private PeriodServiceImpl periodService;
 
     @Mock
     private PeriodRepository periodRepository;
