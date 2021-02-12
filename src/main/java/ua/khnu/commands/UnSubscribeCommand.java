@@ -16,7 +16,6 @@ import ua.khnu.util.KeyboardBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ua.khnu.util.MessageSender.sendCallBackAnswer;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
@@ -40,10 +39,8 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
     @Override
     public void processCallBackMessage(AbsSender absSender, CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
-        String callBackQueryId = callbackQuery.getId();
         subscriptionService.unSubscribe(chatId, callbackQuery.getData());
         sendMessage(absSender, chatId, "You are successfully unsubscribed");
-        sendCallBackAnswer(absSender, callBackQueryId);
     }
 
     @Override

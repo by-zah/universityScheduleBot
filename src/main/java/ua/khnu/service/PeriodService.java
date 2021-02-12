@@ -21,10 +21,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +32,7 @@ import static ua.khnu.util.Constants.TIME_ZONE_ID;
 public class PeriodService {
     public static final Type PERIOD_LIST_TYPE = TypeToken.getParameterized(List.class, Period.class).getType();
     private static final int DAYS_IN_WEEK = 7;
+    private static final String THERE_ARENT_ANY_CLASS_YOU_ARE_ABLE_TO_DELETE = "There aren't any class you are able to delete";
     private final PeriodRepository periodRepository;
     private final Gson gson;
     private final UserRepository userRepository;
@@ -125,8 +123,21 @@ public class PeriodService {
         return periodRepository.findAllByIdIndexAndIdDayAndIdPeriodTypeIn(periodIndex, dayOfWeek, List.of(getEvenOrOdd(), REGULAR));
     }
 
-    public void removeAll(List<Period> periods) {
-        periodRepository.deleteAll(periods);
+    @Transactional
+    public void removeAllClassesInGroupsUserOwn(int userId) {
+        userRepository.findById(userId).ifPresentOrElse(user -> {
+                    var periods = user.getGroupsUserOwn().stream()
+                            .map(Group::getPeriods)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toList());
+                    if (periods.isEmpty()) {
+                        throw new BotException(THERE_ARENT_ANY_CLASS_YOU_ARE_ABLE_TO_DELETE);
+                    }
+                    periodRepository.deleteAll(periods);
+                }
+                , () -> {
+                    throw new BotException(THERE_ARENT_ANY_CLASS_YOU_ARE_ABLE_TO_DELETE);
+                });
     }
 
     public PeriodType getEvenOrOdd() {
