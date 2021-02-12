@@ -9,13 +9,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.entity.Group;
-import ua.khnu.entity.User;
+import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
-import ua.khnu.service.UserService;
 import ua.khnu.util.KeyboardBuilder;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ua.khnu.util.MessageSender.sendCallBackAnswer;
@@ -26,12 +24,12 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
 
     public static final String COMMAND_IDENTIFIER = "unsubscribe";
     private final SubscriptionService subscriptionService;
-    private final UserService userService;
+    private final GroupService groupService;
 
     @Autowired
-    public UnSubscribeCommand(SubscriptionService subscriptionService, UserService userService) {
+    public UnSubscribeCommand(SubscriptionService subscriptionService, GroupService groupService) {
         this.subscriptionService = subscriptionService;
-        this.userService = userService;
+        this.groupService = groupService;
     }
 
     @Override
@@ -55,12 +53,7 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        Optional<User> user = userService.getUserById(message.getFrom().getId());
-        if (!user.isPresent()) {
-            sendMessage(absSender, message.getChatId(), "You aren't registered");
-            return;
-        }
-        List<Group> subscriptions = user.get().getGroups();
+        List<Group> subscriptions = groupService.getUserGroups(message.getFrom().getId());
         if (subscriptions.isEmpty()) {
             sendMessage(absSender, message.getChatId(), "You are not subscribed to any of the groups");
             return;

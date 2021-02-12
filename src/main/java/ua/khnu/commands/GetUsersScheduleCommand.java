@@ -8,10 +8,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.entity.Group;
 import ua.khnu.entity.Period;
 import ua.khnu.service.PeriodService;
-import ua.khnu.service.UserService;
 
-import javax.transaction.Transactional;
-import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,18 +23,17 @@ import static ua.khnu.util.MessageSender.sendMessage;
 public class GetUsersScheduleCommand implements IBotCommand {
     private static final String MESSAGE_TEMPLATE = "Here are %s's %s classes:%n%s";
     private static final String CLASS_TEMPLATE = "%s. %s (%s)%n";
-    private final UserService userService;
+    public static final String COMMAND_IDENTIFIER = "schedule";
     private final PeriodService periodService;
 
     @Autowired
-    public GetUsersScheduleCommand(UserService userService, PeriodService periodService) {
-        this.userService = userService;
+    public GetUsersScheduleCommand(PeriodService periodService) {
         this.periodService = periodService;
     }
 
     @Override
     public String getCommandIdentifier() {
-        return "schedule";
+        return COMMAND_IDENTIFIER;
     }
 
     @Override

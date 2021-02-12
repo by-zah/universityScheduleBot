@@ -18,14 +18,13 @@ import ua.khnu.util.KeyboardBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ua.khnu.util.MessageSender.sendCallBackAnswer;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
 public class SubscribeCommand implements CallBackCommand, IBotCommand {
     private static final String COMMAND_IDENTIFIER = "subscribe";
     private static final String SUCCESS_MESSAGE =
-            "You are successfully subscribed, use /getSchedule to check out you today schedule";
+            String.format("You are successfully subscribed, use /%s to check out you schedule", GetUsersScheduleCommand.COMMAND_IDENTIFIER);
 
     private final SubscriptionService subscriptionService;
     private final GroupService groupService;
@@ -52,8 +51,6 @@ public class SubscribeCommand implements CallBackCommand, IBotCommand {
             sendMessage(absSender, chatId, SUCCESS_MESSAGE);
         } catch (BotException e) {
             sendMessage(absSender, chatId, e.getMessage());
-        } finally {
-            sendCallBackAnswer(absSender, callbackQuery.getId());
         }
     }
 

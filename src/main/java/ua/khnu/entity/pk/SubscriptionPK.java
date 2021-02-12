@@ -13,6 +13,9 @@ public class SubscriptionPK implements Serializable {
     @Column(name = "\"group\"")
     private String group;
 
+    public SubscriptionPK() {
+    }
+
     public SubscriptionPK(long userChatId, String group) {
         this.userChatId = userChatId;
         this.group = group;

@@ -11,7 +11,11 @@ import javax.persistence.Table;
 public class Subscription {
 
     @EmbeddedId
-    private SubscriptionPK id;
+    private final SubscriptionPK id;
+
+    public Subscription() {
+        id = new SubscriptionPK();
+    }
 
     public long getUserChatId() {
         return id.getUserChatId();

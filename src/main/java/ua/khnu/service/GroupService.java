@@ -1,5 +1,6 @@
 package ua.khnu.service;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.entity.Group;
@@ -43,5 +44,10 @@ public class GroupService {
     @Transactional
     public List<Group> getAllGroups() {
         return groupRepository.findAll();
+    }
+
+    @Transactional
+    public List<Group> getUserGroups(int userId) {
+        return groupRepository.findAllByStudentsIdIn(ImmutableList.of(userId));
     }
 }
