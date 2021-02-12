@@ -95,7 +95,7 @@ public class PeriodServiceTest {
         when(period.getPeriodType()).thenReturn(PeriodType.REGULAR);
         when(user.getGroups()).thenReturn(groups);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(scheduleUnit.getStartLocalDateTime()).thenReturn(now.plusHours(1));
+        when(scheduleUnit.getStartLocalDateTime(any(LocalDateTime.class))).thenReturn(now.plusHours(1));
         var expectedClasses = ImmutableList.of(period);
         when(periodRepository.findByGroupInAndIdDay(anyList(), eq(now.getDayOfWeek())))
                 .thenReturn(expectedClasses);

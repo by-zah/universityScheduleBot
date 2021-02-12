@@ -80,16 +80,19 @@ public class ScheduleUnit {
         this.endMin = endMin;
     }
 
+    public LocalDateTime getStartLocalDateTime(LocalDateTime localDateTime){
+        localDateTime = localDateTime.toLocalDate().atStartOfDay();
+        localDateTime = localDateTime.plusHours(startHour);
+        return localDateTime.plusMinutes(startMin);
+    }
+
     public LocalDateTime getStartLocalDateTime() {
         return getStartLocalDateTime(false);
     }
 
     public LocalDateTime getStartLocalDateTime(boolean nextDay) {
-        LocalDateTime localDateTime = LocalDate.now(ZoneId.of(TIME_ZONE_ID)).atStartOfDay();
-        localDateTime = localDateTime.plusHours(startHour);
-        localDateTime = localDateTime.plusMinutes(startMin);
-        localDateTime = nextDay ? localDateTime.plusDays(1) : localDateTime;
-        return localDateTime;
+        var localDateTime = LocalDate.now(ZoneId.of(TIME_ZONE_ID)).atStartOfDay();
+        return  nextDay ? getStartLocalDateTime(localDateTime.plusDays(1)) : getStartLocalDateTime(localDateTime);
     }
 
     private LocalDateTime getEndLocalDateTime() {

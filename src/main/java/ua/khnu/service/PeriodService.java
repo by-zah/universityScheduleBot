@@ -69,9 +69,9 @@ public class PeriodService {
             classes = periodRepository.findByGroupInAndIdDay(groups, now.getDayOfWeek())
                     .stream()
                     .filter(period -> REGULAR.equals(period.getPeriodType()) || getEvenOrOdd().equals(period.getPeriodType()))
-                    .filter(period -> ChronoUnit.MILLIS.between(finalNow, period.getScheduleUnit().getStartLocalDateTime()) > 0)
+                    .filter(period -> ChronoUnit.MILLIS.between(finalNow, period.getScheduleUnit().getStartLocalDateTime(finalNow)) > 0)
                     .collect(Collectors.toList());
-            now = now.plusDays(1);
+            now = now.toLocalDate().atStartOfDay().plusDays(1);
             calls++;
             if (calls >= DAYS_IN_WEEK) {
                 throw new BotException("There aren't any classes yet");
