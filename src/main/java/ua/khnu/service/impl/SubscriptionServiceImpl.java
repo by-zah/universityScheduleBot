@@ -2,8 +2,8 @@ package ua.khnu.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.khnu.entity.pk.SubscriptionPK;
 import ua.khnu.entity.Subscription;
+import ua.khnu.entity.pk.SubscriptionPK;
 import ua.khnu.exception.BotException;
 import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.SubscriptionRepository;
@@ -25,8 +25,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public void subscribe(long userChatId, String message) {
-        String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", message);
+    public void subscribe(long userChatId, String groupName) {
         if (!groupRepository.existsById(groupName)) {
             throw new BotException("There isn`t group with specified name");
         }

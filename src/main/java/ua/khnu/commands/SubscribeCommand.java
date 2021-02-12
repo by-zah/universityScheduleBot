@@ -14,6 +14,7 @@ import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
 import ua.khnu.service.UserService;
 import ua.khnu.util.KeyboardBuilder;
+import ua.khnu.util.MessageParser;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +48,8 @@ public class SubscribeCommand implements CallBackCommand, IBotCommand {
         Message message = callbackQuery.getMessage();
         long chatId = message.getChatId();
         try {
-            subscriptionService.subscribe(chatId, callbackQuery.getData());
+            var groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
+            subscriptionService.subscribe(chatId, groupName);
             sendMessage(absSender, chatId, SUCCESS_MESSAGE);
         } catch (BotException e) {
             sendMessage(absSender, chatId, e.getMessage());
