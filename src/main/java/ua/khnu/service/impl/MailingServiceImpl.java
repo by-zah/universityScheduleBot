@@ -1,5 +1,7 @@
 package ua.khnu.service.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.Bot;
@@ -25,6 +27,7 @@ import static ua.khnu.util.MessageSender.sendMessage;
 
 @Service
 public class MailingServiceImpl implements MailingService {
+    private static final Logger LOG = LogManager.getLogger(MailingServiceImpl.class);
 
     private final ScheduleContainer scheduleContainer;
     private final ExecutorService executorService;
@@ -56,6 +59,7 @@ public class MailingServiceImpl implements MailingService {
     @Override
     @Transactional
     public void sendClassNotifications(int periodIndex, DayOfWeek dayOfWeek) {
+        LOG.info("Perform planned mailing periodIndex {}, dayOfWeek {}", periodIndex, dayOfWeek);
         periodService.getPeriodByDayAndIndex(periodIndex, dayOfWeek).forEach(period -> {
             var students = period.getGroup().getStudents();
             String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
@@ -71,6 +75,7 @@ public class MailingServiceImpl implements MailingService {
     @Override
     public void sendMailingMessages(List<MessageForQueue> messages) {
         queue.addAll(messages);
+        LOG.info("{} messages added to queue, current queue size is {}", messages.size(), queue.size());
         if (!isMailingRunning.get()) {
             performMailing();
         }
@@ -78,6 +83,7 @@ public class MailingServiceImpl implements MailingService {
 
     private void performMailing() {
         executorService.execute(() -> {
+            LOG.info("mailing thread is started");
             try {
                 List<Long> countTimes = new ArrayList<>();
                 isMailingRunning.set(true);
@@ -111,6 +117,7 @@ public class MailingServiceImpl implements MailingService {
     }
 
     private void wait(List<Long> countTimes) throws InterruptedException {
+        LOG.info("Mailing thread is going to sleep, queue size = {}", queue.size());
         Thread.sleep(ONE_SECOND_IN_MILLIS);
         countTimes.clear();
     }
