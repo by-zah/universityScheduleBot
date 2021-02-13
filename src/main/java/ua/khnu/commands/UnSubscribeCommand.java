@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
+public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
 
     public static final String COMMAND_IDENTIFIER = "unsubscribe";
     private final SubscriptionService subscriptionService;
@@ -49,7 +49,7 @@ public class UnSubscribeCommand implements IBotCommand, CallBackCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
         List<Group> subscriptions = groupService.getUserGroups(message.getFrom().getId());
         if (subscriptions.isEmpty()) {
             sendMessage(absSender, message.getChatId(), "You are not subscribed to any of the groups");

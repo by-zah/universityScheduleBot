@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class SubscribeCommand implements CallBackCommand, IBotCommand {
+public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
     private static final String COMMAND_IDENTIFIER = "subscribe";
     private static final String SUCCESS_MESSAGE =
             String.format("You are successfully subscribed, use /%s to check out you schedule", GetUsersScheduleCommand.COMMAND_IDENTIFIER);
@@ -63,7 +63,7 @@ public class SubscribeCommand implements CallBackCommand, IBotCommand {
 
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
         userService.createOrUpdate(message.getFrom().getId(), message.getChatId());
         List<Group> groups = groupService.getAllGroups();
         if (groups.isEmpty()) {

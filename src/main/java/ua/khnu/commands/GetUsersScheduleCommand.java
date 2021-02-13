@@ -2,7 +2,6 @@ package ua.khnu.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.entity.Group;
@@ -20,7 +19,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class GetUsersScheduleCommand implements IBotCommand {
+public class GetUsersScheduleCommand implements SafelyIBotCommand {
     private static final String MESSAGE_TEMPLATE = "Here are %s's %s classes:%n%s";
     private static final String CLASS_TEMPLATE = "%s. %s (%s)%n";
     public static final String COMMAND_IDENTIFIER = "schedule";
@@ -42,7 +41,7 @@ public class GetUsersScheduleCommand implements IBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
         List<String> messageParts = new ArrayList<>();
         periodService.getUpcomingUserClasses(message.getFrom().getId()).stream()
                 .collect(groupingBy(Period::getGroup))

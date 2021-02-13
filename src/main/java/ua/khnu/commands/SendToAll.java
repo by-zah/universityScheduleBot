@@ -2,7 +2,6 @@ package ua.khnu.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.dto.MessageForQueue;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class SendToAll implements IBotCommand {
+public class SendToAll implements SafelyIBotCommand {
     private static final String COMMAND_IDENTIFIER = "sendToAll";
     private static final int MESSAGE_OFFSET = COMMAND_IDENTIFIER.length() + 2;
 
@@ -40,7 +39,7 @@ public class SendToAll implements IBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
         long chatId = message.getChatId();
         var messageText = message.getText().substring(MESSAGE_OFFSET);
         if (messageText.length() < 1) {
@@ -53,12 +52,8 @@ public class SendToAll implements IBotCommand {
             sendMessage(absSender, chatId, "You are not allow to do it");
             return;
         }
-        try {
-            mailingService.sendMailingMessages(userService.getAllUsers().stream()
-                    .map(user -> new MessageForQueue(messageText, user.getChatId()))
-                    .collect(Collectors.toList()));
-        } catch (Exception e) {
-            sendMessage(absSender, chatId, "Error while perform mailing");
-        }
+        mailingService.sendMailingMessages(userService.getAllUsers().stream()
+                .map(user -> new MessageForQueue(messageText, user.getChatId()))
+                .collect(Collectors.toList()));
     }
 }

@@ -36,11 +36,8 @@ public class CallBackCommandProcessor implements CommandProcessor {
         long chatId = callbackQuery.getMessage().getChatId();
         String data = callbackQuery.getData();
         String commandText = data.split(" ")[0];
-        Optional<CallBackCommand> command = Optional.ofNullable(commands.get(commandText));
-        if (command.isPresent()) {
-            command.get().processCallBackMessage(absSender, callbackQuery);
-        } else {
-            sendMessage(absSender, chatId, "Unsupported operation");
-        }
+        Optional.ofNullable(commands.get(commandText))
+                .ifPresentOrElse(command -> command.processCallBackMessage(absSender, callbackQuery),
+                        () -> sendMessage(absSender, chatId, "Unsupported operation"));
     }
 }

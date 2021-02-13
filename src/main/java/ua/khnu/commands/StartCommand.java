@@ -10,7 +10,7 @@ import ua.khnu.service.UserService;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class StartCommand implements IBotCommand {
+public class StartCommand implements SafelyIBotCommand {
     private final UserService userService;
 
     @Autowired
@@ -29,7 +29,7 @@ public class StartCommand implements IBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+    public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
         userService.createOrUpdate(message.getFrom().getId(), message.getChatId());
         sendMessage(absSender
                 , message.getChatId(), "Bot is started, you can /subscribe or"

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.exception.BotException;
 
 import java.util.List;
 
@@ -19,9 +20,16 @@ public class NonCommandProcessor {
     }
 
     public void process(Update update, AbsSender absSender) {
+        final var chatId = update.getMessage().getChatId();
         processors.stream()
                 .filter(p -> p.getCondition().test(update))
-                .findAny().ifPresentOrElse(p -> p.process(update, absSender),
-                () -> sendMessage(absSender, update.getMessage().getChatId(), "Unsupported command"));
+                .findAny().ifPresentOrElse(p -> {
+                    try {
+                        p.process(update, absSender);
+                    } catch (BotException e) {
+                        sendMessage(absSender, chatId, e.getMessage());
+                    }
+                },
+                () -> sendMessage(absSender, chatId, "Unsupported command"));
     }
 }
