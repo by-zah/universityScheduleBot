@@ -9,6 +9,7 @@ import ua.khnu.dto.File;
 import ua.khnu.entity.Group;
 import ua.khnu.entity.Period;
 import ua.khnu.entity.PeriodType;
+import ua.khnu.entity.pk.PeriodPK;
 import ua.khnu.exception.BotException;
 import ua.khnu.exception.CsvException;
 import ua.khnu.repository.PeriodRepository;
@@ -131,6 +132,15 @@ public class PeriodServiceImpl implements PeriodService {
                 , () -> {
                     throw new BotException(THERE_ARENT_ANY_CLASS_YOU_ARE_ABLE_TO_DELETE);
                 });
+    }
+
+    @Override
+    @Transactional
+    public void updateClassRoom(PeriodPK id, String newRoom) {
+        var period = periodRepository.findById(id)
+                .orElseThrow(() -> new BotException("Period doesn't exist"));
+        period.setRoomNumber(newRoom);
+        periodRepository.save(period);
     }
 
     private List<Period> parseJson(String json) {

@@ -10,7 +10,7 @@ import java.time.DayOfWeek;
 @Table(name = "classes")
 public class Period implements Serializable {
     @EmbeddedId
-    private PeriodPK id;
+    private final PeriodPK id;
 
     @Column(name = "name")
     private String name;

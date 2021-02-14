@@ -2,6 +2,7 @@ package ua.khnu.service;
 
 import ua.khnu.dto.File;
 import ua.khnu.entity.Period;
+import ua.khnu.entity.pk.PeriodPK;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -16,4 +17,5 @@ public interface PeriodService {
 
     void removeAllClassesInGroupsUserOwn(int userId);
 
+    void updateClassRoom(PeriodPK id, String newRoom);
 }

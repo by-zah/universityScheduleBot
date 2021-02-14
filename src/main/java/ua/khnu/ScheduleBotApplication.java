@@ -9,16 +9,36 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 //TODO add localization
 
 @ComponentScan
 public class ScheduleBotApplication {
     private static final Logger LOG = LogManager.getLogger(ScheduleBotApplication.class);
+    private static final String PORT = System.getenv("PORT");
     private static ApplicationContext context;
 
     public static void main(String[] args) {
+        LOG.info("Running with docker!");
         context = new AnnotationConfigApplicationContext(ScheduleBotApplication.class);
         startBot();
+        listenHostingPort();
+    }
+
+    private static void listenHostingPort() {
+        if (PORT == null){
+            return;
+        }
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(PORT))) {
+            while (true) {
+                serverSocket.accept();
+            }
+        } catch (IOException e) {
+            LOG.error(e);
+        }
     }
 
     private static void startBot() {
