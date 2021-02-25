@@ -1,6 +1,7 @@
 package ua.khnu.entity;
 
 import ua.khnu.entity.pk.PeriodPK;
+import ua.khnu.util.csv.CsvGetter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,6 +42,7 @@ public class Period implements Serializable {
         return scheduleUnit;
     }
 
+    @CsvGetter(order = 3)
     public PeriodType getPeriodType() {
         return id.getPeriodType();
     }
@@ -49,6 +51,7 @@ public class Period implements Serializable {
         id.setPeriodType(periodType);
     }
 
+    @CsvGetter(order = 0)
     public String getGroupName() {
         return id.getGroupName();
     }
@@ -57,6 +60,7 @@ public class Period implements Serializable {
         id.setGroupName(groupName);
     }
 
+    @CsvGetter(order = 2)
     public int getIndex() {
         return id.getIndex();
     }
@@ -65,6 +69,7 @@ public class Period implements Serializable {
         id.setIndex(index);
     }
 
+    @CsvGetter(order = 1)
     public DayOfWeek getDay() {
         return id.getDay();
     }
@@ -73,6 +78,7 @@ public class Period implements Serializable {
         id.setDay(day);
     }
 
+    @CsvGetter(order = 4)
     public String getName() {
         return name;
     }
@@ -81,6 +87,7 @@ public class Period implements Serializable {
         this.name = name;
     }
 
+    @CsvGetter(order = 5)
     public String getRoomNumber() {
         return roomNumber;
     }
@@ -89,6 +96,7 @@ public class Period implements Serializable {
         this.roomNumber = roomNumber;
     }
 
+    @CsvGetter(order = 6)
     public String getBuilding() {
         return building;
     }

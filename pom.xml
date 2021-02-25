@@ -27,6 +27,7 @@
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>1.1.1</version>
                 <configuration>
+                    <extraJvmArguments>-XX:+UseContainerSupport -Xmx300m -Xss512k -Dfile.encoding=UTF-8</extraJvmArguments>
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
@@ -126,6 +127,18 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>2.3.6.RELEASE</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.16</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+<!--    <annotationProcessorPaths>-->
+<!--        <path>-->
+<!--            <groupId>org.projectlombok</groupId>-->
+<!--            <artifactId>lombok</artifactId>-->
+<!--            <version>1.18.16</version>-->
+<!--        </path>-->
+<!--    </annotationProcessorPaths>-->
 </project>

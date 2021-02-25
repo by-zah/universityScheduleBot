@@ -4,7 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -25,17 +27,30 @@ public final class MessageSender {
         execute(absSender, reMessage);
     }
 
+    public static void sendFile(AbsSender absSender, InputFile inputFile, long chatId, String messageText) {
+        var sendDocument = new SendDocument();
+        sendDocument.setDocument(inputFile);
+        sendDocument.setCaption(messageText);
+        sendDocument.setChatId(String.valueOf(chatId));
+        try {
+            absSender.execute(sendDocument);
+        } catch (TelegramApiException e) {
+            LOG.error("Can't send document {}", sendDocument, e);
+        }
+
+    }
+
     public static void sendCallBackAnswer(AbsSender absSender, String callBackQueryId) {
         AnswerCallbackQuery message = new AnswerCallbackQuery();
         message.setCallbackQueryId(callBackQueryId);
         execute(absSender, message);
     }
 
-    private static void execute(AbsSender absSender, BotApiMethod<?> apiMethod) {
+    public static void execute(AbsSender absSender, BotApiMethod<?> apiMethod) {
         try {
             absSender.execute(apiMethod);
         } catch (TelegramApiException e) {
-            LOG.error("Can not execute reMessage {}",apiMethod, e);
+            LOG.error("Can not execute reMessage {}", apiMethod, e);
         }
     }
 }

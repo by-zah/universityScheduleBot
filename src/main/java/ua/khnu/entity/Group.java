@@ -1,9 +1,14 @@
 package ua.khnu.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "groups")
 public class Group {
 
@@ -22,31 +27,7 @@ public class Group {
     @JoinColumn(name = "group_name", insertable = false, updatable = false)
     private List<Period> periods;
 
-    public List<Period> getPeriods() {
-        return periods;
-    }
-
-    public List<User> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<User> students) {
-        this.students = students;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "name", insertable = false, updatable = false)
+    private Deadline deadline;
 }

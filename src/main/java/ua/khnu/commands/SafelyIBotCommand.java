@@ -20,6 +20,9 @@ public interface SafelyIBotCommand extends IBotCommand {
         } catch (BotException e) {
             LOG.error("Exception while message processing, exception = {}, message = {}, args = {}", e, message, strings);
             handleBotException(e, absSender, message.getChatId());
+        } catch (Exception e) {
+            LOG.error("Exception while message processing, exception = {}, message = {}, args = {}", e, message, strings);
+            sendMessage(absSender, message.getChatId(), "Problem happens while command processing");
         }
     }
 

@@ -13,7 +13,7 @@ import ua.khnu.exception.BotException;
 import ua.khnu.repository.PeriodRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.impl.PeriodServiceImpl;
-import ua.khnu.util.Csv;
+import ua.khnu.util.csv.Csv;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;

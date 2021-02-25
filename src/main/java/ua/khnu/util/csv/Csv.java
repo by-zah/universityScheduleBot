@@ -1,10 +1,11 @@
-package ua.khnu.util;
+package ua.khnu.util.csv;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import ua.khnu.exception.CsvException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,6 +74,43 @@ public class Csv {
             }
         });
         return result;
+    }
+
+    public <T> String createCsvFromObject(List<T> targets, Class<T> targetClass) {
+        final var getters = Arrays.stream(targetClass.getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(CsvGetter.class))
+                .sorted(Comparator.comparing(m -> m.getAnnotation(CsvGetter.class).order()))
+                .collect(Collectors.toList());
+        final var headers = buildHeaders(getters);
+        final var body = targets.stream()
+                .map(target -> toCsvLine(target, getters))
+                .collect(Collectors.joining(rowSeparator));
+        return headers + rowSeparator + body;
+    }
+
+    private <T> String toCsvLine(T target, List<Method> getters) {
+        return getters.stream()
+                .map(getter -> {
+                    try {
+                        return getter.invoke(target);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new CsvException("Not properly getter configured");
+                    }
+                })
+                .map(o -> {
+                    var value = o == null ? "" : o.toString();
+                    if (value.contains("\n")) {
+                        value = "\"" + value + "\"";
+                    }
+                    return value;
+                }).collect(Collectors.joining(valueSeparator));
+    }
+
+    private String buildHeaders(List<Method> getters) {
+        return getters.stream()
+                .map(Method::getName)
+                .map(name -> name.substring(3))
+                .collect(Collectors.joining(valueSeparator));
     }
 
     private <T> T cast(String s, Class<T> originalClass) {

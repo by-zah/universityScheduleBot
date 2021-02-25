@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.exception.BotException;
 import ua.khnu.service.ScheduleService;
-import ua.khnu.util.FileDownloader;
+import ua.khnu.util.FileUtil;
 
 import static ua.khnu.util.MessageSender.sendMessage;
 
@@ -37,7 +37,7 @@ public class UpdateScheduleCommand implements FileCommand {
     @Override
     public void processFileMessage(AbsSender absSender, Message message) {
         try {
-            var file = FileDownloader.getFileContent(absSender, message, "json");
+            var file = FileUtil.getFileContent(absSender, message, "json");
             service.updateScheduleFromJson(file.getContent(), message.getFrom().getId());
             scheduleDemon.interrupt();
             sendMessage(absSender, message.getChatId(), "New schedule is successfully set");

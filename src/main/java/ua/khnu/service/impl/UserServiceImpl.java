@@ -3,12 +3,15 @@ package ua.khnu.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.entity.User;
+import ua.khnu.entity.UserSettings;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.UserService;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,5 +44,31 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public UserSettings switchClassNotificationSetting(int userId) {
+        return switchSetting(userId, UserSettings::setClassNotificationsEnabled, UserSettings::isClassNotificationsEnabled);
+    }
+
+    @Override
+    @Transactional
+    public UserSettings switchDeadlineNotificationSetting(int userId) {
+        return switchSetting(userId, UserSettings::setDeadlineNotificationsEnabled, UserSettings::isDeadlineNotificationsEnabled);
+    }
+
+    private UserSettings switchSetting(int userId, BiConsumer<UserSettings, Boolean> setter, Predicate<UserSettings> getter) {
+        final var user = userRepository.findById(userId).orElseGet(() -> new User(userId));
+        final var userSettings = user.getSettings();
+        setter.accept(userSettings, !getter.test(userSettings));
+        userRepository.save(user);
+        return user.getSettings();
     }
 }

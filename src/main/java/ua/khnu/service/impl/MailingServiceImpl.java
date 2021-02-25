@@ -4,14 +4,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ua.khnu.Bot;
-import ua.khnu.dto.MessageForQueue;
+import ua.khnu.commands.MarkDeadlineAsDoneCommand;
 import ua.khnu.dto.ScheduleContainer;
+import ua.khnu.entity.Deadline;
+import ua.khnu.repository.UserRepository;
 import ua.khnu.service.MailingService;
 import ua.khnu.service.PeriodService;
 
 import javax.transaction.Transactional;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static ua.khnu.util.Constants.ONE_SECOND_IN_MILLIS;
-import static ua.khnu.util.MessageSender.sendMessage;
+import static ua.khnu.util.Constants.TIME_ZONE_ID;
+import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
+import static ua.khnu.util.MessageSender.execute;
 
 @Service
 public class MailingServiceImpl implements MailingService {
@@ -31,15 +39,17 @@ public class MailingServiceImpl implements MailingService {
 
     private final ScheduleContainer scheduleContainer;
     private final ExecutorService executorService;
-    private final Queue<MessageForQueue> queue;
+    private final Queue<SendMessage> queue;
     private final AtomicBoolean isMailingRunning;
     private final PeriodService periodService;
+    private final UserRepository userRepository;
     private Bot bot;
 
     @Autowired
-    public MailingServiceImpl(ScheduleContainer scheduleContainer, PeriodService periodService) {
+    public MailingServiceImpl(ScheduleContainer scheduleContainer, PeriodService periodService, UserRepository userRepository) {
         this.scheduleContainer = scheduleContainer;
         this.periodService = periodService;
+        this.userRepository = userRepository;
         executorService = Executors.newSingleThreadExecutor();
         queue = new ConcurrentLinkedQueue<>();
         isMailingRunning = new AtomicBoolean(false);
@@ -61,24 +71,49 @@ public class MailingServiceImpl implements MailingService {
     public void sendClassNotifications(int periodIndex, DayOfWeek dayOfWeek) {
         LOG.info("Perform planned mailing periodIndex {}, dayOfWeek {}", periodIndex, dayOfWeek);
         periodService.getPeriodByDayAndIndex(periodIndex, dayOfWeek).forEach(period -> {
-            var students = period.getGroup().getStudents();
+            var students = period.getGroup().getStudents().stream()
+                    .filter(student -> student.getSettings().isClassNotificationsEnabled())
+                    .collect(Collectors.toList());
             String message = period.getName() + " in 10 minutes in room " + period.getRoomNumber();
             message = period.getBuilding() == null ?
                     message : message + " in " + period.getBuilding() + " building";
             String finalMessage = message;
             sendMailingMessages(students.stream()
-                    .map(user -> new MessageForQueue(finalMessage, user.getChatId()))
+                    .map(user -> {
+                        var sendMessage = new SendMessage();
+                        sendMessage.setChatId(String.valueOf(user.getChatId()));
+                        sendMessage.setText(finalMessage);
+                        return sendMessage;
+                    })
                     .collect(Collectors.toList()));
         });
     }
 
     @Override
-    public void sendMailingMessages(List<MessageForQueue> messages) {
+    public void sendMailingMessages(List<SendMessage> messages) {
         queue.addAll(messages);
         LOG.info("{} messages added to queue, current queue size is {}", messages.size(), queue.size());
         if (!isMailingRunning.get()) {
             performMailing();
         }
+    }
+
+    @Override
+    @Transactional
+    public void sendDeadlineNotifications(Deadline deadline) {
+        final var now = LocalDate.now(ZoneId.of(TIME_ZONE_ID));
+        var messages = userRepository.findAllByGroupsContainingAndSettingsIsDeadlineNotificationsEnabled(deadline.getRelatedGroups(), true)
+                .stream()
+                .map(user -> {
+                    var period = Period.between(now, deadline.getDeadLineTime().toLocalDate());
+                    var message = period.getDays() + " days left to deadline by discipline \"" + deadline.getClassName() + "\" here is task description:\n" + deadline.getTaskDescription();
+                    var sendMessage = new SendMessage();
+                    sendMessage.setReplyMarkup(buildInlineKeyboard("/" + MarkDeadlineAsDoneCommand.COMMAND_IDENTIFIER, List.of("Mark as done"), List.of(String.valueOf(deadline.getId()))));
+                    sendMessage.setChatId(String.valueOf(user.getChatId()));
+                    sendMessage.setText(message);
+                    return sendMessage;
+                }).collect(Collectors.toList());
+        sendMailingMessages(messages);
     }
 
     private void performMailing() {
@@ -104,7 +139,7 @@ public class MailingServiceImpl implements MailingService {
                         if (countTimes.size() == 30) {
                             wait(countTimes);
                         }
-                        sendMessage(bot, m.getChatId(), m.getMessage());
+                        execute(bot, m);
                         countTimes.add(System.currentTimeMillis());
                     }
                 }
@@ -122,7 +157,7 @@ public class MailingServiceImpl implements MailingService {
         countTimes.clear();
     }
 
-    private Optional<MessageForQueue> queuePoll() {
+    private Optional<SendMessage> queuePoll() {
         return Optional.ofNullable(queue.poll());
     }
 }

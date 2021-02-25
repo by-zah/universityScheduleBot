@@ -47,6 +47,9 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(Subscription.class);
         configuration.addAnnotatedClass(ScheduleUnit.class);
         configuration.addAnnotatedClass(Period.class);
+        configuration.addAnnotatedClass(Deadline.class);
+        configuration.addAnnotatedClass(UserDeadline.class);
+        configuration.addAnnotatedClass(UserSettings.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();

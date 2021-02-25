@@ -1,6 +1,9 @@
 package ua.khnu.entity;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +15,8 @@ import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 @Entity
 @Table(name = "schedule")
+@Getter
+@Setter
 public class ScheduleUnit {
 
     private static final DateTimeFormatter SIMPLE_DATE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -35,50 +40,6 @@ public class ScheduleUnit {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "index", insertable = false, updatable = false)
     private List<Period> classes;
-
-    public List<Period> getClasses() {
-        return classes;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public int getStartHour() {
-        return startHour;
-    }
-
-    public void setStartHour(int startHour) {
-        this.startHour = startHour;
-    }
-
-    public int getStartMin() {
-        return startMin;
-    }
-
-    public void setStartMin(int startMin) {
-        this.startMin = startMin;
-    }
-
-    public int getEndHour() {
-        return endHour;
-    }
-
-    public void setEndHour(int endHour) {
-        this.endHour = endHour;
-    }
-
-    public int getEndMin() {
-        return endMin;
-    }
-
-    public void setEndMin(int endMin) {
-        this.endMin = endMin;
-    }
 
     public LocalDateTime getStartLocalDateTime(LocalDateTime localDateTime){
         localDateTime = localDateTime.toLocalDate().atStartOfDay();

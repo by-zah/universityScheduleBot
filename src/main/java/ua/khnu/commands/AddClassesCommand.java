@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.exception.BotException;
 import ua.khnu.service.PeriodService;
-import ua.khnu.util.FileDownloader;
+import ua.khnu.util.FileUtil;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class AddClassesCommand implements FileCommand {
     public void processFileMessage(AbsSender absSender, Message message) {
         long chatId = message.getChatId();
         try {
-            var file = FileDownloader.getFileContent(absSender, message, List.of("json", "csv"));
+            var file = FileUtil.getFileContent(absSender, message, List.of("json", "csv"));
             periodService.addAll(file, message.getFrom().getId());
             sendMessage(absSender, chatId, "Classes added");
         } catch (BotException e) {

@@ -18,4 +18,6 @@ public interface PeriodService {
     void removeAllClassesInGroupsUserOwn(int userId);
 
     void updateClassRoom(PeriodPK id, String newRoom);
+
+    List<Period> getAllPeriods();
 }
