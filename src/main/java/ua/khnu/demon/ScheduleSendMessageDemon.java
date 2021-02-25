@@ -50,6 +50,8 @@ public class ScheduleSendMessageDemon implements Runnable {
                 Thread.sleep(90000);
             } catch (InterruptedException e) {
                 LOG.info("new schedule set");
+            } catch (Exception e) {
+                LOG.error(e);
             }
         }
     }
