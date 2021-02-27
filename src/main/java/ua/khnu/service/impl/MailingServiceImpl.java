@@ -2,6 +2,7 @@ package ua.khnu.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,6 +10,7 @@ import ua.khnu.Bot;
 import ua.khnu.commands.MarkDeadlineAsDoneCommand;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Deadline;
+import ua.khnu.entity.UserDeadline;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.MailingService;
 import ua.khnu.service.PeriodService;
@@ -100,16 +102,29 @@ public class MailingServiceImpl implements MailingService {
 
     @Override
     @Transactional
-    public void sendDeadlineNotifications(Deadline deadline) {
+    public void sendDeadlineNotifications(List<Deadline> deadlines) {
+        deadlines.forEach(this::sendDeadlineNotification);
+    }
+
+    private void sendDeadlineNotification(Deadline deadline) {
+        Hibernate.initialize(deadline.getUserDeadlines());
+        LOG.info("Send notifications for deadline {}", deadline);
         final var now = LocalDate.now(ZoneId.of(TIME_ZONE_ID));
-        var messages = userRepository.findAllByGroupsContainingAndSettingsIsDeadlineNotificationsEnabled(deadline.getRelatedGroups(), true)
+        final var userDeadlines = deadline.getUserDeadlines();
+        var ids = userRepository.findAllByIdInAndSettingsIsDeadlineNotificationsEnabled(
+                userDeadlines.stream()
+                        .map(userDeadline -> userDeadline.getId().getUserId())
+                        .collect(Collectors.toList())
+                ,true);
+        var messages = userDeadlines
                 .stream()
-                .map(user -> {
-                    var period = Period.between(now, deadline.getDeadLineTime().toLocalDate());
-                    var message = period.getDays() + " days left to deadline by discipline \"" + deadline.getClassName() + "\" here is task description:\n" + deadline.getTaskDescription();
+                .filter(userDeadline -> ids.contains(userDeadline.getId().getUserId()))
+                .map(userDeadline -> {
+                    var timePeriod = Period.between(now, deadline.getDeadLineTime().toLocalDate());
+                    var message = timePeriod.getDays() + " days left to deadline by discipline \"" + deadline.getClassName() + "\" here is task description:\n" + deadline.getTaskDescription();
                     var sendMessage = new SendMessage();
-                    sendMessage.setReplyMarkup(buildInlineKeyboard("/" + MarkDeadlineAsDoneCommand.COMMAND_IDENTIFIER, List.of("Mark as done"), List.of(String.valueOf(deadline.getId()))));
-                    sendMessage.setChatId(String.valueOf(user.getChatId()));
+                    sendMessage.setReplyMarkup(buildInlineKeyboard("/" + MarkDeadlineAsDoneCommand.COMMAND_IDENTIFIER, List.of(String.valueOf(deadline.getId())), List.of("Mark as done")));
+                    sendMessage.setChatId(String.valueOf(userDeadline.getId().getUserId()));
                     sendMessage.setText(message);
                     return sendMessage;
                 }).collect(Collectors.toList());

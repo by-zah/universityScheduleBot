@@ -3,8 +3,10 @@ package ua.khnu.service;
 import ua.khnu.demon.DeadlineSendMessageDemon;
 import ua.khnu.dto.DeadlineNotificationDto;
 import ua.khnu.entity.Deadline;
+import ua.khnu.entity.pk.UserDeadlinePK;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface DeadlineService {
@@ -17,5 +19,7 @@ public interface DeadlineService {
 
     Deadline getNearestDeadline();
 
-    Optional<DeadlineNotificationDto> getNextDeadlineToNotification();
+    List<DeadlineNotificationDto> getNextDeadlineToNotification();
+
+    void markUserDeadlineAsDone(UserDeadlinePK userDeadlineId);
 }

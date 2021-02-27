@@ -6,6 +6,7 @@ import ua.khnu.entity.pk.PeriodPK;
 
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 public interface PeriodService {
 
@@ -20,4 +21,6 @@ public interface PeriodService {
     void updateClassRoom(PeriodPK id, String newRoom);
 
     List<Period> getAllPeriods();
+
+    Set<String> getAllClassesNames();
 }

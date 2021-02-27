@@ -26,6 +26,7 @@ public class IsDayOffServiceImpl implements IsDayOffService {
 
     @Override
     public boolean isTodayDayOf() {
+        LOG.info("Invoke isTodayDayOf method");
         return isDayOff != null && LocalDate.now(ZoneId.of(TIME_ZONE_ID)).equals(lastSuccessesApiCall) ? isDayOff : callApi();
     }
 
@@ -39,7 +40,7 @@ public class IsDayOffServiceImpl implements IsDayOffService {
             connection.setRequestMethod(GET);
             result = readData(connection);
         } catch (IOException e) {
-            LOG.error("IsDayOff service throw error", e);
+            LOG.error(e);
             return false;
         } finally {
             if (connection != null) {
@@ -48,6 +49,7 @@ public class IsDayOffServiceImpl implements IsDayOffService {
         }
         lastSuccessesApiCall = localDate;
         isDayOff = "1".equals(result);
+        LOG.info("success call to isDayOff API, isDayOff = {}", isDayOff);
         return isDayOff;
     }
 

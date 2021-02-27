@@ -152,6 +152,11 @@ public class PeriodServiceImpl implements PeriodService {
         return periodList;
     }
 
+    @Override
+    public Set<String> getAllClassesNames() {
+        return periodRepository.findAllDistinctByName();
+    }
+
     private List<Period> parseJson(String json) {
         return gson.fromJson(json, PERIOD_LIST_TYPE);
     }

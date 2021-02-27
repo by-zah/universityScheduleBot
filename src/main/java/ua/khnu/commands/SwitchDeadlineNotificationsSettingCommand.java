@@ -11,6 +11,7 @@ import static ua.khnu.util.MessageSender.sendMessage;
 @Component
 public class SwitchDeadlineNotificationsSettingCommand implements SafelyIBotCommand {
     private static final String DEADLINE_NOTIFICATIONS_SUCCESSFULLY_TURNED = "Deadline notifications successfully turned";
+    public static final String COMMAND_IDENTIFIER = "switchDeadlineNotificationsSetting";
 
     private final UserService userService;
 
@@ -22,7 +23,7 @@ public class SwitchDeadlineNotificationsSettingCommand implements SafelyIBotComm
     @Override
     public void safelyProcessMessage(AbsSender absSender, Message message, String[] strings) {
         var userSettings = userService.switchDeadlineNotificationSetting(message.getFrom().getId());
-        var messageText = userSettings.isClassNotificationsEnabled()
+        var messageText = userSettings.isDeadlineNotificationsEnabled()
                 ? DEADLINE_NOTIFICATIONS_SUCCESSFULLY_TURNED + " on"
                 : DEADLINE_NOTIFICATIONS_SUCCESSFULLY_TURNED + " off";
         sendMessage(absSender, message.getChatId(), messageText);
@@ -30,7 +31,7 @@ public class SwitchDeadlineNotificationsSettingCommand implements SafelyIBotComm
 
     @Override
     public String getCommandIdentifier() {
-        return "switchDeadlineNotificationsSetting";
+        return COMMAND_IDENTIFIER;
     }
 
     @Override

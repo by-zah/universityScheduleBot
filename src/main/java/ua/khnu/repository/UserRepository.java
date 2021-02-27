@@ -15,4 +15,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("FROM User u JOIN Subscription  s on u.id = s.id.userChatId JOIN Group g on s.id.group = g.name WHERE g IN :groups AND u.settings.isDeadlineNotificationsEnabled = :isDeadlineNotificationsEnabled")
     List<User> findAllByGroupsContainingAndSettingsIsDeadlineNotificationsEnabled(@Param("groups") List<Group> groups, @Param("isDeadlineNotificationsEnabled") boolean isDeadlineNotificationsEnabled);
 
+    @Query("FROM User u JOIN Subscription  s on u.id = s.id.userChatId WHERE s.id.group = :groupName")
+    List<User> findAllByGroupName(@Param("groupName") String groupName);
+
+    @Query("SELECT u.id FROM User u WHERE u.id IN :ids AND u.settings.isDeadlineNotificationsEnabled = :isDeadlineNotificationsEnabled")
+    List<Integer> findAllByIdInAndSettingsIsDeadlineNotificationsEnabled(@Param("ids") Iterable<Integer> ids, @Param("isDeadlineNotificationsEnabled") boolean isDeadlineNotificationsEnabled);
 }

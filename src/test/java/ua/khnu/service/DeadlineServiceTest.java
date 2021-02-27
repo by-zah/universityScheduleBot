@@ -8,9 +8,7 @@ import org.testng.annotations.Test;
 import ua.khnu.demon.DeadlineSendMessageDemon;
 import ua.khnu.entity.Deadline;
 import ua.khnu.exception.BotException;
-import ua.khnu.repository.DeadlineRepository;
-import ua.khnu.repository.GroupRepository;
-import ua.khnu.repository.PeriodRepository;
+import ua.khnu.repository.*;
 import ua.khnu.service.impl.DeadlineServiceImpl;
 import ua.khnu.util.csv.Csv;
 
@@ -39,6 +37,12 @@ public class DeadlineServiceTest {
     @Mock
     private PeriodRepository periodRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private UserDeadlineRepository userDeadlineRepository;
+
     @BeforeClass
     public void init() {
         initMocks(this);
@@ -47,7 +51,7 @@ public class DeadlineServiceTest {
 
     @BeforeMethod
     public void beforeEach() {
-        reset(deadlineRepository, groupRepository, csv, periodRepository);
+        reset(deadlineRepository, groupRepository, csv, periodRepository, userDeadlineRepository, userRepository);
         when(groupRepository.existsById(anyString())).thenReturn(true);
         when(periodRepository.existsByName(anyString())).thenReturn(true);
     }

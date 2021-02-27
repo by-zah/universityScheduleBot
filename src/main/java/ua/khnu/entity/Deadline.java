@@ -19,6 +19,7 @@ import static ua.khnu.util.Constants.TIME_ZONE_ID;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Table(name = "deadline")
+@ToString
 public class Deadline {
     @Id
     @SequenceGenerator(name = "deadline_id_seq",
@@ -36,9 +37,13 @@ public class Deadline {
     @Column(name = "class_name")
     private String className;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_name", insertable = false, updatable = false)
-    private List<Group> relatedGroups;
+    private Group relatedGroup;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deadline_id", insertable = false, updatable = false)
+    private List<UserDeadline> userDeadlines;
 
     @CsvGetter(order = 2)
     public LocalDateTime getDeadLineTime() {
@@ -59,7 +64,5 @@ public class Deadline {
     public String getClassName() {
         return className;
     }
-
-//    private List<User> relatedUsers;
 
 }

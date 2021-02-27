@@ -11,6 +11,7 @@ import static ua.khnu.util.MessageSender.sendFile;
 
 @Component
 public class GetDeadlinesFileCommand implements SafelyIBotCommand {
+    public static final String COMMAND_IDENTIFIER = "getDeadlinesFile";
     private final DeadlineService deadlineService;
 
     @Autowired
@@ -26,7 +27,7 @@ public class GetDeadlinesFileCommand implements SafelyIBotCommand {
 
     @Override
     public String getCommandIdentifier() {
-        return "getDeadlinesFile";
+        return COMMAND_IDENTIFIER;
     }
 
     @Override

@@ -1,15 +1,17 @@
 package ua.khnu.service.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.demon.DeadlineSendMessageDemon;
 import ua.khnu.dto.DeadlineNotificationDto;
 import ua.khnu.entity.Deadline;
+import ua.khnu.entity.UserDeadline;
+import ua.khnu.entity.pk.UserDeadlinePK;
 import ua.khnu.exception.BotException;
-import ua.khnu.repository.DeadlineRepository;
-import ua.khnu.repository.GroupRepository;
-import ua.khnu.repository.PeriodRepository;
+import ua.khnu.repository.*;
 import ua.khnu.service.DeadlineService;
 import ua.khnu.util.csv.Csv;
 
@@ -19,30 +21,38 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 @Service
 public class DeadlineServiceImpl implements DeadlineService {
+    private static final Logger LOG = LogManager.getLogger(DeadlineServiceImpl.class);
     private static final long TIME_30_DAYS_IN_MILLIS = 2_592_000_000L;
     private static final long TIME_7_DAYS_IN_MILLIS = 604_800_000L;
     private static final long TIME_5_DAYS_IN_MILLIS = 432_000_000L;
+    private static final long TIME_4_DAYS_IN_MILLIS = 345_600_000L;
+    private static final long TIME_3_DAYS_IN_MILLIS = 259_200_000L;
+    private static final long TIME_2_DAYS_IN_MILLIS = 172_800_000L;
     private static final long TIME_1_DAYS_IN_MILLIS = 86_400_000L;
 
     private final DeadlineRepository deadlineRepository;
     private final GroupRepository groupRepository;
     private final Csv csv;
     private final PeriodRepository periodRepository;
+    private final UserRepository userRepository;
+    private final UserDeadlineRepository userDeadlineRepository;
     private DeadlineSendMessageDemon deadlineSendMessageDemon;
 
     @Autowired
-    public DeadlineServiceImpl(DeadlineRepository deadlineRepository, GroupRepository groupRepository, Csv csv, PeriodRepository periodRepository) {
+    public DeadlineServiceImpl(DeadlineRepository deadlineRepository, GroupRepository groupRepository, Csv csv, PeriodRepository periodRepository, UserRepository userRepository, UserDeadlineRepository userDeadlineRepository) {
         this.deadlineRepository = deadlineRepository;
         this.groupRepository = groupRepository;
         this.csv = csv;
         this.periodRepository = periodRepository;
+        this.userRepository = userRepository;
+        this.userDeadlineRepository = userDeadlineRepository;
     }
 
     public void setDeadlineSendMessageDemon(DeadlineSendMessageDemon deadlineSendMessageDemon) {
@@ -64,6 +74,7 @@ public class DeadlineServiceImpl implements DeadlineService {
         }
         deadlineRepository.findByGroupNameAndClassNameAndDeadLineTime(groupName, className, localDateTime)
                 .ifPresentOrElse(deadline -> {
+                    LOG.info("Update existing deadline {}, with new description {}", deadline, description);
                     var newDescription = deadline.getTaskDescription() + " | " + description;
                     deadline.setTaskDescription(newDescription);
                     deadlineRepository.save(deadline);
@@ -74,7 +85,11 @@ public class DeadlineServiceImpl implements DeadlineService {
                             .taskDescription(description)
                             .className(className)
                             .build();
+                    LOG.info("Create new deadline {}", deadLine);
                     deadlineRepository.save(deadLine);
+                    userRepository.findAllByGroupName(groupName).stream()
+                            .map(user -> new UserDeadline(new UserDeadlinePK(user.getId(), deadLine.getId()), false))
+                            .forEach(userDeadlineRepository::save);
                 });
         deadlineSendMessageDemon.onNewDeadlineAdded();
     }
@@ -96,24 +111,50 @@ public class DeadlineServiceImpl implements DeadlineService {
         }
         deadlines.sort(Comparator.comparing(Deadline::getDeadLineTime));
         final var deadline = deadlines.get(0);
-        Hibernate.initialize(deadline.getRelatedGroups());
+        Hibernate.initialize(deadline.getRelatedGroup());
         return deadline;
     }
 
     @Override
     @Transactional
-    public Optional<DeadlineNotificationDto> getNextDeadlineToNotification() {
+    public List<DeadlineNotificationDto> getNextDeadlineToNotification() {
         var deadlines = deadlineRepository.findByDeadLineTimeGreaterThan(LocalDateTime.now(ZoneId.of(TIME_ZONE_ID)));
-        var res = Stream.of(
+        var deadlinesInFuture = Stream.of(
                 deadlinesToDto(deadlines, TIME_30_DAYS_IN_MILLIS),
                 deadlinesToDto(deadlines, TIME_7_DAYS_IN_MILLIS),
                 deadlinesToDto(deadlines, TIME_5_DAYS_IN_MILLIS),
+                deadlinesToDto(deadlines, TIME_4_DAYS_IN_MILLIS),
+                deadlinesToDto(deadlines, TIME_3_DAYS_IN_MILLIS),
+                deadlinesToDto(deadlines, TIME_2_DAYS_IN_MILLIS),
                 deadlinesToDto(deadlines, TIME_1_DAYS_IN_MILLIS)
         ).flatMap(deadlineNotificationDto -> deadlineNotificationDto)
                 .filter(DeadlineNotificationDto::isInFuture)
-                .min(DeadlineNotificationDto::compareTo);
-        res.ifPresent(deadline -> Hibernate.initialize(deadline.getDeadline().getRelatedGroups()));
-        return res;
+                .collect(Collectors.toList());
+        var min = deadlinesInFuture.stream().min(DeadlineNotificationDto::compareTo);
+        if (min.isEmpty()) {
+            return List.of();
+        }
+        final var collect = deadlinesInFuture.stream()
+                .filter(deadlineNotificationDto -> min.get().getMillisToNotification() == deadlineNotificationDto.getMillisToNotification())
+                .collect(Collectors.toList());
+        LOG.info("Next deadlines to notification:{}", collect);
+        return collect;
+    }
+
+    @Override
+    @Transactional
+    public void markUserDeadlineAsDone(UserDeadlinePK userDeadlineId) {
+        var userDeadline = userDeadlineRepository.findById(userDeadlineId);
+        if (userDeadline.isEmpty()) {
+            LOG.error("User deadline doesn't exist {}", userDeadlineId);
+            throw new BotException("Deadline doesn't exist");
+        }
+        userDeadline.ifPresent(userDeadlineP -> {
+            if (userDeadlineP.isDone()) {
+                throw new BotException("Deadline already marks as done");
+            }
+            userDeadlineP.setDone(true);
+        });
     }
 
     private Stream<DeadlineNotificationDto> deadlinesToDto(List<Deadline> deadlines, long millis) {

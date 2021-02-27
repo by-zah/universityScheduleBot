@@ -16,7 +16,9 @@ import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
 public class AddDeadlineCommand implements SafelyIBotCommand {
-    private static final String COMMAND_SHOULD_HAVE_ARGS = "command should have 4 args (group name, class name, deadline time, description) splatted by \";\"";
+    public static final String COMMAND_IDENTIFIER = "addDeadline";
+    private static final String COMMAND_SHOULD_HAVE_ARGS = "command should have 4 args (group name, class name, deadline time, description) splatted by \";\"" +
+            "\n follow this format {groupName};{className};{yyyy-MM-dd HH:mm};{description}";
     private final DeadlineService deadlineService;
 
     @Autowired
@@ -47,7 +49,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand {
 
     @Override
     public String getCommandIdentifier() {
-        return "addDeadline";
+        return COMMAND_IDENTIFIER;
     }
 
     @Override

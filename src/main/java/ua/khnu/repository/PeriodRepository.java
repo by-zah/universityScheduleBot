@@ -11,6 +11,7 @@ import ua.khnu.entity.pk.PeriodPK;
 
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PeriodRepository extends JpaRepository<Period, PeriodPK> {
@@ -23,4 +24,7 @@ public interface PeriodRepository extends JpaRepository<Period, PeriodPK> {
     void updateByGroupNameAndPeriodIndex(String groupName, int periodIndex, String newRoom);
 
     boolean existsByName(String periodName);
+
+    @Query("SELECT DISTINCT p.name  FROM Period p")
+    Set<String> findAllDistinctByName();
 }
