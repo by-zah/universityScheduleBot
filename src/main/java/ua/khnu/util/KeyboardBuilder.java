@@ -4,7 +4,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class KeyboardBuilder {
     private KeyboardBuilder() {
@@ -35,5 +37,22 @@ public final class KeyboardBuilder {
 
     public static InlineKeyboardMarkup buildInlineKeyboard(String commandIdentifier, List<String> args) {
         return buildInlineKeyboard(commandIdentifier, args, null);
+    }
+
+    public static InlineKeyboardMarkup buildOneButtonPerRowKeyboard(String commandIdentifier, List<String> args, List<String> buttonTexts) {
+        if (buttonTexts == null || args.size() != buttonTexts.size()) {
+            buttonTexts = args;
+        }
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        var inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        for (int i = 0; i < args.size(); i++) {
+            var arg = args.get(i);
+            var inlineKeyboardButton = new InlineKeyboardButton();
+            inlineKeyboardButton.setText(buttonTexts.get(i));
+            inlineKeyboardButton.setCallbackData(commandIdentifier + " " + arg);
+            rowList.add(List.of(inlineKeyboardButton));
+        }
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        return inlineKeyboardMarkup;
     }
 }

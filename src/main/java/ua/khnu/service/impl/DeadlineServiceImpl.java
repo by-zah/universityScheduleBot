@@ -95,6 +95,11 @@ public class DeadlineServiceImpl implements DeadlineService {
     }
 
     @Override
+    public void createDeadline(Deadline deadline) {
+        createDeadline(deadline.getGroupName(), deadline.getClassName(), deadline.getDeadLineTime(), deadline.getTaskDescription());
+    }
+
+    @Override
     @Transactional
     public String getAllDeadlinesCsv() {
         final var allDeadlines = deadlineRepository.findAll();
@@ -118,7 +123,8 @@ public class DeadlineServiceImpl implements DeadlineService {
     @Override
     @Transactional
     public List<DeadlineNotificationDto> getNextDeadlineToNotification() {
-        var deadlines = deadlineRepository.findByDeadLineTimeGreaterThan(LocalDateTime.now(ZoneId.of(TIME_ZONE_ID)));
+        final var now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
+        var deadlines = deadlineRepository.findByDeadLineTimeGreaterThan(now);
         var deadlinesInFuture = Stream.of(
                 deadlinesToDto(deadlines, TIME_30_DAYS_IN_MILLIS),
                 deadlinesToDto(deadlines, TIME_7_DAYS_IN_MILLIS),
@@ -128,14 +134,14 @@ public class DeadlineServiceImpl implements DeadlineService {
                 deadlinesToDto(deadlines, TIME_2_DAYS_IN_MILLIS),
                 deadlinesToDto(deadlines, TIME_1_DAYS_IN_MILLIS)
         ).flatMap(deadlineNotificationDto -> deadlineNotificationDto)
-                .filter(DeadlineNotificationDto::isInFuture)
+                .filter(deadlineNotificationDto -> deadlineNotificationDto.isInFuture(now))
                 .collect(Collectors.toList());
-        var min = deadlinesInFuture.stream().min(DeadlineNotificationDto::compareTo);
+        var min = deadlinesInFuture.stream().min((d, d1) -> d.compareTo(d1, now));
         if (min.isEmpty()) {
             return List.of();
         }
         final var collect = deadlinesInFuture.stream()
-                .filter(deadlineNotificationDto -> min.get().getMillisToNotification() == deadlineNotificationDto.getMillisToNotification())
+                .filter(deadlineNotificationDto -> min.get().getMillisToNotification(now) == deadlineNotificationDto.getMillisToNotification(now))
                 .collect(Collectors.toList());
         LOG.info("Next deadlines to notification:{}", collect);
         return collect;

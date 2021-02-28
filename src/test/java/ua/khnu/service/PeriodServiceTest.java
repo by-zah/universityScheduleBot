@@ -21,7 +21,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.testng.Assert.assertThrows;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
@@ -43,7 +43,7 @@ public class PeriodServiceTest {
 
     @BeforeClass
     private void beforeClass() {
-        initMocks(this);
+        openMocks(this);
     }
 
     @BeforeMethod

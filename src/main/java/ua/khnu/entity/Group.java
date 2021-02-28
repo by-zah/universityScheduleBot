@@ -27,7 +27,7 @@ public class Group {
     @JoinColumn(name = "group_name", insertable = false, updatable = false)
     private List<Period> periods;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "name", insertable = false, updatable = false)
-    private Deadline deadline;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_name", insertable = false, updatable = false)
+    private List<Deadline> deadlines;
 }

@@ -15,6 +15,8 @@ public interface DeadlineService {
 
     void createDeadline(String groupName, String className, LocalDateTime localDateTime, String description);
 
+    void createDeadline(Deadline deadline);
+
     String getAllDeadlinesCsv();
 
     Deadline getNearestDeadline();

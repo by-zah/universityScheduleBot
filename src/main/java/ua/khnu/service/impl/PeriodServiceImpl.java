@@ -153,7 +153,7 @@ public class PeriodServiceImpl implements PeriodService {
     }
 
     @Override
-    public Set<String> getAllClassesNames() {
+    public List<String> getAllClassesNames() {
         return periodRepository.findAllDistinctByName();
     }
 

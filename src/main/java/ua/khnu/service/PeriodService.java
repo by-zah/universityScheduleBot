@@ -6,7 +6,6 @@ import ua.khnu.entity.pk.PeriodPK;
 
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.Set;
 
 public interface PeriodService {
 
@@ -22,5 +21,5 @@ public interface PeriodService {
 
     List<Period> getAllPeriods();
 
-    Set<String> getAllClassesNames();
+    List<String> getAllClassesNames();
 }

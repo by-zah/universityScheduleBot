@@ -7,30 +7,25 @@ import lombok.ToString;
 import ua.khnu.entity.Deadline;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-
-import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class DeadlineNotificationDto implements Comparable<DeadlineNotificationDto> {
+public class DeadlineNotificationDto {
     private final Deadline deadline;
     private final long millis;
 
-    @Override
-    public int compareTo(DeadlineNotificationDto o) {
-        return Long.compare(getMillisToNotification(), o.getMillisToNotification());
+    public int compareTo(DeadlineNotificationDto o, LocalDateTime now) {
+        return Long.compare(getMillisToNotification(now), o.getMillisToNotification(now));
     }
 
-    public boolean isInFuture() {
-        return getMillisToNotification() > 0;
+    public boolean isInFuture(LocalDateTime now) {
+        return getMillisToNotification(now) > 0;
     }
 
-    public long getMillisToNotification() {
-        var now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
+    public long getMillisToNotification(LocalDateTime now) {
         return ChronoUnit.MILLIS.between(now, deadline.getDeadLineTime()) - millis;
     }
 }
