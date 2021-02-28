@@ -59,7 +59,7 @@ public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
                 .buildInlineKeyboard("/" + COMMAND_IDENTIFIER,
                         subscriptions.stream()
                                 .map(Group::getName)
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()), 3);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         sendMessage(absSender, message.getChatId(), sendMessage, "Select the group, you want to unsubscribe");
     }

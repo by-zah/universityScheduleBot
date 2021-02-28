@@ -38,11 +38,12 @@ public class DeadlineSendMessageDemon implements Runnable {
     public void run() {
         while (true) {
             try {
-                nextDeadlineNotifications = deadlineService.getNextDeadlineToNotification();
-                while (nextDeadlineNotifications.isEmpty()) {
-                    synchronized (this) {
+                synchronized (this) {
+                    nextDeadlineNotifications = deadlineService.getNextDeadlineToNotification();
+                    while (nextDeadlineNotifications.isEmpty()) {
                         LOG.info("No deadlines, wait for updates");
                         wait(Long.MAX_VALUE);
+
                     }
                 }
                 var nextDeadlinesTemp = nextDeadlineNotifications;

@@ -10,7 +10,6 @@ import ua.khnu.Bot;
 import ua.khnu.commands.MarkDeadlineAsDoneCommand;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Deadline;
-import ua.khnu.entity.UserDeadline;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.MailingService;
 import ua.khnu.service.PeriodService;
@@ -123,7 +122,7 @@ public class MailingServiceImpl implements MailingService {
                     var timePeriod = Period.between(now, deadline.getDeadLineTime().toLocalDate());
                     var message = timePeriod.getDays() + " days left to deadline by discipline \"" + deadline.getClassName() + "\" here is task description:\n" + deadline.getTaskDescription();
                     var sendMessage = new SendMessage();
-                    sendMessage.setReplyMarkup(buildInlineKeyboard("/" + MarkDeadlineAsDoneCommand.COMMAND_IDENTIFIER, List.of(String.valueOf(deadline.getId())), List.of("Mark as done")));
+                    sendMessage.setReplyMarkup(buildInlineKeyboard("/" + MarkDeadlineAsDoneCommand.COMMAND_IDENTIFIER, List.of(String.valueOf(deadline.getId())), List.of("Mark as done"), 1));
                     sendMessage.setChatId(String.valueOf(userDeadline.getId().getUserId()));
                     sendMessage.setText(message);
                     return sendMessage;

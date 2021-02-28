@@ -32,7 +32,6 @@ import java.util.stream.IntStream;
 
 import static ua.khnu.util.Constants.DATE_TIME_FORMATTER;
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.KeyboardBuilder.buildOneButtonPerRowKeyboard;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
@@ -63,7 +62,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
                             .stream()
                             .map(Group::getName)
                             .collect(Collectors.toList());
-                    return buildInlineKeyboard("/" + getCommandIdentifier(), groupNames);
+                    return buildInlineKeyboard("/" + getCommandIdentifier(), groupNames, 3);
                 }),
                 new MessageAndKeyboard("Select class name " + OR,
                         () -> {
@@ -71,7 +70,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
                             final var indexes = IntStream.range(0, allClassesNames.size()).boxed()
                                     .map(Objects::toString)
                                     .collect(Collectors.toList());
-                            return buildOneButtonPerRowKeyboard("/" + getCommandIdentifier(), indexes, allClassesNames);
+                            return buildInlineKeyboard("/" + getCommandIdentifier(), indexes, allClassesNames, 1);
                         }),
                 new MessageAndKeyboard("Enter deadline date and time in following format " + DATE_TIME_FORMATTER.format(LocalDateTime.now()) + " " + OR, InlineKeyboardMarkup::new),
                 new MessageAndKeyboard("Enter task description " + OR, InlineKeyboardMarkup::new)

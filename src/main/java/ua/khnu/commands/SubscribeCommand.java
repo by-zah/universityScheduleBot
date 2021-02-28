@@ -74,7 +74,7 @@ public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
                 .buildInlineKeyboard("/" + COMMAND_IDENTIFIER,
                         groups.stream()
                                 .map(Group::getName)
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()), 3);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         sendMessage(absSender, message.getChatId(), sendMessage, "Select the group, you want to subscribe");
     }
