@@ -7,7 +7,6 @@ import ua.khnu.entity.pk.UserDeadlinePK;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface DeadlineService {
 
@@ -24,4 +23,6 @@ public interface DeadlineService {
     List<DeadlineNotificationDto> getNextDeadlineToNotification();
 
     void markUserDeadlineAsDone(UserDeadlinePK userDeadlineId);
+
+    boolean changeDeadlineDoneStatus(UserDeadlinePK userDeadlineId);
 }

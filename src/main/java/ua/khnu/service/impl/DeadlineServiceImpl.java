@@ -95,6 +95,7 @@ public class DeadlineServiceImpl implements DeadlineService {
     }
 
     @Override
+    @Transactional
     public void createDeadline(Deadline deadline) {
         createDeadline(deadline.getGroupName(), deadline.getClassName(), deadline.getDeadLineTime(), deadline.getTaskDescription());
     }
@@ -161,6 +162,18 @@ public class DeadlineServiceImpl implements DeadlineService {
             }
             userDeadlineP.setDone(true);
         });
+    }
+
+    @Override
+    @Transactional
+    public boolean changeDeadlineDoneStatus(UserDeadlinePK userDeadlineId) {
+        var userDeadline = userDeadlineRepository.findById(userDeadlineId);
+        if (userDeadline.isEmpty()) {
+            LOG.error("User deadline doesn't exist {}", userDeadlineId);
+            throw new BotException("Deadline doesn't exist");
+        }
+        userDeadline.ifPresent(userDeadlineP -> userDeadlineP.setDone(!userDeadlineP.isDone()));
+        return userDeadline.get().isDone();
     }
 
     private Stream<DeadlineNotificationDto> deadlinesToDto(List<Deadline> deadlines, long millis) {

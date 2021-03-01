@@ -49,6 +49,7 @@ public final class MessageSender {
 
     public static void execute(AbsSender absSender, BotApiMethod<?> apiMethod) {
         try {
+            LOG.info("Execute {}", apiMethod);
             absSender.execute(apiMethod);
         } catch (TelegramApiRequestException e) {
             LOG.error(e);
