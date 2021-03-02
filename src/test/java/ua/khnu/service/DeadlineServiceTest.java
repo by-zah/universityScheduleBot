@@ -10,6 +10,7 @@ import ua.khnu.demon.DeadlineSendMessageDemon;
 import ua.khnu.dto.DeadlineNotificationDto;
 import ua.khnu.entity.Deadline;
 import ua.khnu.entity.UserDeadline;
+import ua.khnu.entity.pk.UserDeadlinePK;
 import ua.khnu.exception.BotException;
 import ua.khnu.repository.*;
 import ua.khnu.service.impl.DeadlineServiceImpl;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 
@@ -193,5 +195,24 @@ public class DeadlineServiceTest {
                 .collect(Collectors.toList());
 
         assertEquals(List.of(deadline1), actual);
+    }
+
+    @Test(expectedExceptions = BotException.class)
+    public void testChangeDeadlineDoneStatusWhenUserDeadlineDoesntExist() {
+        var userDeadlinePk = mock(UserDeadlinePK.class);
+
+        deadlineService.changeDeadlineDoneStatus(userDeadlinePk);
+    }
+
+    @Test
+    public void testDeadlineDoneStatus() {
+        var userDeadlinePk = mock(UserDeadlinePK.class);
+        var userDeadline = new UserDeadline();
+        userDeadline.setDone(true);
+        when(userDeadlineRepository.findById(userDeadlinePk)).thenReturn(Optional.of(userDeadline));
+
+        var actual = deadlineService.changeDeadlineDoneStatus(userDeadlinePk);
+
+        assertFalse(actual);
     }
 }
