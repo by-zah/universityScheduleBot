@@ -15,14 +15,14 @@ import java.net.ServerSocket;
 
 //TODO
 // 1. Add localization
-// 2. Investigate and implement /stop command
+// 2. Investigate and implement /stop command - done
 // 3. Switch to TimedSendLongPollingBot
-// 4. Deadline feature
+// 4. Deadline feature - done
 // 5. Collect statistic
+// 6. User settings
+// 7. Manage deadline that user created
 
 
-//heroku container:push web --app universityschedulebot
-//heroku container:release web --app universityschedulebot
 @ComponentScan
 public class ScheduleBotApplication {
     private static final Logger LOG = LogManager.getLogger(ScheduleBotApplication.class);
@@ -30,11 +30,9 @@ public class ScheduleBotApplication {
     private static ApplicationContext context;
 
     public static void main(String[] args) {
-        LOG.info("Running with docker!");
         context = new AnnotationConfigApplicationContext(ScheduleBotApplication.class);
         startBot();
         listenHostingPort();
-
     }
 
     private static void listenHostingPort() {

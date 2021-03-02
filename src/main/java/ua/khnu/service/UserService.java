@@ -10,6 +10,8 @@ public interface UserService {
 
     void createOrUpdate(int userId, long chatId);
 
+    User createUser(int userId, long chatId);
+
     Optional<User> getUserById(int userId);
 
     List<User> getAllUsers();

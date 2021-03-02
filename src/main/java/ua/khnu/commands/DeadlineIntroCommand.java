@@ -18,7 +18,7 @@ public class DeadlineIntroCommand implements SafelyIBotCommand {
         LOG.info("Introduce deadline feature");
         var messageText = "Напоминания по дедлайнам по умолчанию включены и будут приходить за 30, 7, 5, 4, 3, 2, 1  дней до его срока, " +
                 "в каждом напоминании будет кнопка \"Mark as done\", чтобы отметить дедлайн как сделанный и не получать больше уведомления о нем. " +
-                "Если вы не хотите вовсе пользоваться  этой функцией команда /" + SwitchDeadlineNotificationsSettingCommand.COMMAND_IDENTIFIER +
+                "Если вы не хотите вовсе пользоваться  этой функцией команда /" + UserSettingsCommand.COMMAND_IDENTIFIER +
                 " выключит все уведомления о дедлайнах.\nТак же каждый имеет возможность добавлять дедлайн по команде /" + AddDeadlineCommand.COMMAND_IDENTIFIER +
                 "\n\n Посмотреть уже добавленные дедлайны можно по команде /"+GetDeadlinesFileCommand.COMMAND_IDENTIFIER;
         sendMessage(absSender, message.getChatId(), messageText);

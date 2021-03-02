@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void createOrUpdate(int userId, long chatId) {
+        //TODO needs to be reviewed;
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty() || userOpt.get().getChatId() != chatId) {
             User user = new User();
@@ -32,6 +33,14 @@ public class UserServiceImpl implements UserService {
             user.setChatId(chatId);
             userRepository.save(user);
         }
+    }
+
+    @Override
+    public User createUser(int userId, long chatId) {
+        var user = new User();
+        user.setId(userId);
+        user.setChatId(chatId);
+        return userRepository.save(user);
     }
 
     @Override
