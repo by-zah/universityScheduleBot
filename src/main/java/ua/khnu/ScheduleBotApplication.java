@@ -19,7 +19,7 @@ import java.net.ServerSocket;
 // 3. Switch to TimedSendLongPollingBot
 // 4. Deadline feature - done
 // 5. Collect statistic
-// 6. User settings
+// 6. User settings - done
 // 7. Manage deadline that user created
 
 

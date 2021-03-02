@@ -19,7 +19,7 @@ public interface PeriodRepository extends JpaRepository<Period, PeriodPK> {
 
     List<Period> findByGroupInAndIdDay(List<Group> groups, DayOfWeek day);
 
-    List<Period> findByGroupInAndIdDayAndPeriodTypeIn(List<Group> groups, DayOfWeek day, List<PeriodType> periodTypes);
+    List<Period> findByGroupInAndIdDayAndIdPeriodTypeIn(List<Group> groups, DayOfWeek day, List<PeriodType> periodTypes);
 
     @Query("UPDATE Period p SET p.roomNumber=:newRoom WHERE p.group.name=:groupName and p.scheduleUnit.index=:periodIndex")
     void updateByGroupNameAndPeriodIndex(String groupName, int periodIndex, String newRoom);

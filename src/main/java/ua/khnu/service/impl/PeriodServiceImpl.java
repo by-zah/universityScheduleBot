@@ -68,7 +68,7 @@ public class PeriodServiceImpl implements PeriodService {
         List<Period> classes;
         do {
             final var finalNow = now;
-            classes = periodRepository.findByGroupInAndIdDayAndPeriodTypeIn(groups, now.getDayOfWeek(), List.of(REGULAR, getEvenOrOdd()))
+            classes = periodRepository.findByGroupInAndIdDayAndIdPeriodTypeIn(groups, now.getDayOfWeek(), List.of(REGULAR, getEvenOrOdd()))
                     .stream()
                     .filter(period -> ChronoUnit.MILLIS.between(finalNow, period.getScheduleUnit().getStartLocalDateTime(finalNow)) > 0)
                     .collect(Collectors.toList());
