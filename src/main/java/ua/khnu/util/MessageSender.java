@@ -24,7 +24,6 @@ public final class MessageSender {
     public static void sendMessage(AbsSender absSender, long chatId, SendMessage reMessage, String messageText) {
         reMessage.setChatId(String.valueOf(chatId));
         reMessage.setText(messageText);
-        LOG.info("Start sending message {} to chatId {}", reMessage, chatId);
         execute(absSender, reMessage);
     }
 
