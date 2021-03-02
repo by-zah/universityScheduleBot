@@ -13,7 +13,7 @@ import ua.khnu.exception.BotException;
 import ua.khnu.repository.PeriodRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.impl.PeriodServiceImpl;
-import ua.khnu.util.Csv;
+import ua.khnu.util.csv.Csv;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.testng.Assert.assertThrows;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
@@ -43,7 +43,7 @@ public class PeriodServiceTest {
 
     @BeforeClass
     private void beforeClass() {
-        initMocks(this);
+        openMocks(this);
     }
 
     @BeforeMethod

@@ -21,4 +21,9 @@ public interface PeriodRepository extends JpaRepository<Period, PeriodPK> {
 
     @Query("UPDATE Period p SET p.roomNumber=:newRoom WHERE p.group.name=:groupName and p.scheduleUnit.index=:periodIndex")
     void updateByGroupNameAndPeriodIndex(String groupName, int periodIndex, String newRoom);
+
+    boolean existsByName(String periodName);
+
+    @Query("SELECT DISTINCT p.name  FROM Period p ORDER BY p.name")
+    List<String> findAllDistinctByName();
 }

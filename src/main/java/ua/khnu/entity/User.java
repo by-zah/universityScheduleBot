@@ -1,10 +1,15 @@
 package ua.khnu.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Setter
+@Getter
 public class User {
     @Id
     @Column(name = "id")
@@ -34,59 +39,20 @@ public class User {
     @JoinColumn(name = "owner_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<Group> groupsUserOwn;
 
-    public List<Group> getGroupsUserOwn() {
-        return groupsUserOwn;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id", referencedColumnName = "user_id")
+    private UserSettings settings;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private List<UserDeadline> deadlines;
+    
+    public User() {
+        settings = new UserSettings();
     }
 
-    public void setGroupsUserOwn(List<Group> groupsUserOwn) {
-        this.groupsUserOwn = groupsUserOwn;
-    }
-
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public User(int id) {
+        this();
         this.id = id;
-    }
-
-    public long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
-
-    public String getLocal() {
-        return local;
-    }
-
-    public void setLocal(String local) {
-        this.local = local;
-    }
-
-    public String getInterfacultyDiscipline() {
-        return interfacultyDiscipline;
-    }
-
-    public void setInterfacultyDiscipline(String interfacultyDiscipline) {
-        this.interfacultyDiscipline = interfacultyDiscipline;
-    }
-
-    public boolean isSupper() {
-        return isSupper;
-    }
-
-    public void setSupper(boolean isSupper) {
-        this.isSupper = isSupper;
     }
 }

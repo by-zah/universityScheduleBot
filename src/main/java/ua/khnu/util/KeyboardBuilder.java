@@ -10,16 +10,20 @@ public final class KeyboardBuilder {
     private KeyboardBuilder() {
     }
 
-    public static InlineKeyboardMarkup buildInlineKeyboard(String commandIdentifier, List<String> args) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+    public static InlineKeyboardMarkup buildInlineKeyboard(String commandIdentifier, List<String> args, List<String> buttonTexts, int buttonsInRow) {
+        if (buttonTexts == null || args.size() != buttonTexts.size()) {
+            throw new IllegalArgumentException();
+        }
+        var inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
-        for (String arg : args) {
-            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-            inlineKeyboardButton.setText(arg);
+        for (int i = 0; i < args.size(); i++) {
+            var arg = args.get(i);
+            var inlineKeyboardButton = new InlineKeyboardButton();
+            inlineKeyboardButton.setText(buttonTexts.get(i));
             inlineKeyboardButton.setCallbackData(commandIdentifier + " " + arg);
             row.add(inlineKeyboardButton);
-            if (row.size() > 2) {
+            if (row.size() >= buttonsInRow) {
                 rowList.add(row);
                 row = new ArrayList<>();
             }
@@ -27,5 +31,9 @@ public final class KeyboardBuilder {
         rowList.add(row);
         inlineKeyboardMarkup.setKeyboard(rowList);
         return inlineKeyboardMarkup;
+    }
+
+    public static InlineKeyboardMarkup buildInlineKeyboard(String commandIdentifier, List<String> args, int buttonsInRow) {
+        return buildInlineKeyboard(commandIdentifier, args, List.copyOf(args), buttonsInRow);
     }
 }

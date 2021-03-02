@@ -2,7 +2,6 @@ package ua.khnu.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -60,8 +59,8 @@ public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
                 .buildInlineKeyboard("/" + COMMAND_IDENTIFIER,
                         subscriptions.stream()
                                 .map(Group::getName)
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()), 3);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage(absSender, message.getChatId(), "Select the group, you want to unsubscribe", sendMessage);
+        sendMessage(absSender, message.getChatId(), sendMessage, "Select the group, you want to unsubscribe");
     }
 }

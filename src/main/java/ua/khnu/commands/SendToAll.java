@@ -2,9 +2,9 @@ package ua.khnu.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.dto.MessageForQueue;
 import ua.khnu.entity.User;
 import ua.khnu.service.MailingService;
 import ua.khnu.service.UserService;
@@ -53,7 +53,12 @@ public class SendToAll implements SafelyIBotCommand {
             return;
         }
         mailingService.sendMailingMessages(userService.getAllUsers().stream()
-                .map(user -> new MessageForQueue(messageText, user.getChatId()))
+                .map(user -> {
+                    var sendMessage = new SendMessage();
+                    sendMessage.setChatId(String.valueOf(user.getChatId()));
+                    sendMessage.setText(messageText);
+                    return sendMessage;
+                })
                 .collect(Collectors.toList()));
     }
 }

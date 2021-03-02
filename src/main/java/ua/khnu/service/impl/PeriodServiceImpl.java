@@ -3,6 +3,7 @@ package ua.khnu.service.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.khnu.dto.File;
@@ -15,7 +16,7 @@ import ua.khnu.exception.CsvException;
 import ua.khnu.repository.PeriodRepository;
 import ua.khnu.repository.UserRepository;
 import ua.khnu.service.PeriodService;
-import ua.khnu.util.Csv;
+import ua.khnu.util.csv.Csv;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Type;
@@ -141,6 +142,19 @@ public class PeriodServiceImpl implements PeriodService {
                 .orElseThrow(() -> new BotException("Period doesn't exist"));
         period.setRoomNumber(newRoom);
         periodRepository.save(period);
+    }
+
+    @Override
+    @Transactional
+    public List<Period> getAllPeriods() {
+        var periodList = periodRepository.findAll();
+        periodList.forEach(Hibernate::initialize);
+        return periodList;
+    }
+
+    @Override
+    public List<String> getAllClassesNames() {
+        return periodRepository.findAllDistinctByName();
     }
 
     private List<Period> parseJson(String json) {
