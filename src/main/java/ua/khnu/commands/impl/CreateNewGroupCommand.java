@@ -1,9 +1,10 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.service.GroupService;
 import ua.khnu.service.UserService;
 
@@ -32,7 +33,7 @@ public class CreateNewGroupCommand implements SafelyIBotCommand {
 
     @Override
     public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
-        Integer userId = message.getFrom().getId();
+        var userId = message.getFrom().getId();
         userService.createOrUpdate(userId, message.getChatId());
         groupService.createNewGroup(userId, message.getText());
         sendMessage(absSender, message.getChatId(), "new group created");

@@ -1,4 +1,4 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,6 +8,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.CallBackCommand;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Deadline;
 import ua.khnu.service.DeadlineService;
 
@@ -36,7 +38,7 @@ public class RemoveDeadlineUserCreateCommand implements SafelyIBotCommand, CallB
 
     @Override
     public void safelyProcessMessage(AbsSender absSender, Message message, String[] strings) {
-        var deadlinesUserCreate = deadlineService.getDeadlinesUserCreate(message.getFrom().getId());
+        var deadlinesUserCreate = deadlineService.getDeadlinesUserCreate(Math.toIntExact(message.getFrom().getId()));
         final var chatId = message.getChatId();
         if (deadlinesUserCreate.isEmpty()) {
             sendMessage(absSender, chatId, YOU_DON_T_HAVE_ANY_ACTIVE_DEADLINE_YET);
@@ -58,7 +60,7 @@ public class RemoveDeadlineUserCreateCommand implements SafelyIBotCommand, CallB
         final var chatId = callbackQuery.getMessage().getChatId();
         sendMessage(absSender, chatId, "The deadline has been deleted");
 
-        var deadlinesUserCreate = deadlineService.getDeadlinesUserCreate(callbackQuery.getFrom().getId());
+        var deadlinesUserCreate = deadlineService.getDeadlinesUserCreate(Math.toIntExact(callbackQuery.getFrom().getId()));
         var messageText = deadlinesUserCreate.isEmpty() ? YOU_DON_T_HAVE_ANY_ACTIVE_DEADLINE_YET : buildMessage(deadlinesUserCreate);
         var keyboard = buildKeyboard(deadlinesUserCreate, getIdsList(deadlinesUserCreate));
         var edit = new EditMessageText();

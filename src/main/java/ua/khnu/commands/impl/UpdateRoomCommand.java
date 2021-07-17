@@ -1,9 +1,10 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.PeriodType;
 import ua.khnu.entity.pk.PeriodPK;
 import ua.khnu.service.PeriodService;

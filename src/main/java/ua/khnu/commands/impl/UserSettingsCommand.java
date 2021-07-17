@@ -1,4 +1,4 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.CallBackCommand;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.UserSettings;
 import ua.khnu.service.UserService;
 
@@ -33,12 +35,12 @@ public class UserSettingsCommand implements SafelyIBotCommand, CallBackCommand {
 
 
     private final UserService userService;
-    private final Map<String, Consumer<Integer>> settingsUpdateFunctions;
+    private final Map<String, Consumer<Long>> settingsUpdateFunctions;
 
     @Autowired
     public UserSettingsCommand(UserService userService) {
         this.userService = userService;
-        settingsUpdateFunctions = ImmutableMap.<String, Consumer<Integer>>builder()
+        settingsUpdateFunctions = ImmutableMap.<String, Consumer<Long>>builder()
                 .put(CLASS, userService::switchClassNotificationSetting)
                 .put(DEADLINE, userService::switchDeadlineNotificationSetting)
                 .build();
@@ -94,7 +96,7 @@ public class UserSettingsCommand implements SafelyIBotCommand, CallBackCommand {
                 userSettings.isClassNotificationsEnabled(), userSettings.isDeadlineNotificationsEnabled());
     }
 
-    private UserSettings getUserSettings(int userId, long chatId) {
+    private UserSettings getUserSettings(long userId, long chatId) {
         var user = userService.getUserById(userId)
                 .orElseGet(() -> userService.createUser(userId, chatId));
         return user.getSettings();

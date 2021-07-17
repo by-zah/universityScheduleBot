@@ -11,5 +11,5 @@ import java.util.List;
 @Transactional
 public interface GroupRepository extends JpaRepository<Group, String> {
 
-    List<Group> findAllByStudentsIdIn(List<Integer> studentsIds);
+    List<Group> findAllByStudentsIdIn(List<Long> studentsIds);
 }

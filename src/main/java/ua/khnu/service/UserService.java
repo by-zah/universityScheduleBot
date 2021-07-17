@@ -8,17 +8,17 @@ import java.util.Optional;
 
 public interface UserService {
 
-    void createOrUpdate(int userId, long chatId);
+    void createOrUpdate(long userId, long chatId);
 
-    User createUser(int userId, long chatId);
+    User createUser(long userId, long chatId);
 
-    Optional<User> getUserById(int userId);
+    Optional<User> getUserById(long userId);
 
     List<User> getAllUsers();
 
     void updateUser(User user);
 
-    UserSettings switchClassNotificationSetting(int userId);
+    UserSettings switchClassNotificationSetting(long userId);
 
-    UserSettings switchDeadlineNotificationSetting(int userId);
+    UserSettings switchDeadlineNotificationSetting(long userId);
 }

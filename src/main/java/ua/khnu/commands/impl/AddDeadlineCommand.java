@@ -1,4 +1,4 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
@@ -11,6 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.CallBackCommand;
+import ua.khnu.commands.MultiCommand;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.dto.MultiCommandBuildersContainer;
 import ua.khnu.dto.MultiCommandObjectBuilder;
 import ua.khnu.entity.Deadline;

@@ -1,10 +1,11 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.SafelyIBotCommand;
 
 import static ua.khnu.util.MessageSender.sendMessage;
 

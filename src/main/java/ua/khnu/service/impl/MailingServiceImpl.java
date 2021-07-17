@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ua.khnu.BotV2;
-import ua.khnu.commands.MarkDeadlineAsDoneCommand;
+import ua.khnu.commands.impl.MarkDeadlineAsDoneCommand;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Deadline;
 import ua.khnu.repository.UserRepository;

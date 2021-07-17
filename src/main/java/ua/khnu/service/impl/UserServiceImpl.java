@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void createOrUpdate(int userId, long chatId) {
+    public void createOrUpdate(long userId, long chatId) {
         //TODO needs to be reviewed;
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty() || userOpt.get().getChatId() != chatId) {
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(int userId, long chatId) {
+    public User createUser(long userId, long chatId) {
         var user = new User();
         user.setId(userId);
         user.setChatId(chatId);
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<User> getUserById(int userId) {
+    public Optional<User> getUserById(long userId) {
         return userRepository.findById(userId);
     }
 
@@ -63,17 +63,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSettings switchClassNotificationSetting(int userId) {
+    public UserSettings switchClassNotificationSetting(long userId) {
         return switchSetting(userId, UserSettings::setClassNotificationsEnabled, UserSettings::isClassNotificationsEnabled);
     }
 
     @Override
     @Transactional
-    public UserSettings switchDeadlineNotificationSetting(int userId) {
+    public UserSettings switchDeadlineNotificationSetting(long userId) {
         return switchSetting(userId, UserSettings::setDeadlineNotificationsEnabled, UserSettings::isDeadlineNotificationsEnabled);
     }
 
-    private UserSettings switchSetting(int userId, BiConsumer<UserSettings, Boolean> setter, Predicate<UserSettings> getter) {
+    private UserSettings switchSetting(long userId, BiConsumer<UserSettings, Boolean> setter, Predicate<UserSettings> getter) {
         final var user = userRepository.findById(userId).orElseGet(() -> new User(userId));
         final var userSettings = user.getSettings();
         setter.accept(userSettings, !getter.test(userSettings));

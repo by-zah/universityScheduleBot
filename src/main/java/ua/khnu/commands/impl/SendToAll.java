@@ -1,10 +1,11 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.User;
 import ua.khnu.service.MailingService;
 import ua.khnu.service.UserService;
@@ -46,7 +47,7 @@ public class SendToAll implements SafelyIBotCommand {
             sendMessage(absSender, chatId, "Can`t send empty message");
             return;
         }
-        int userId = message.getFrom().getId();
+        var userId = message.getFrom().getId();
         Optional<User> userOpt = userService.getUserById(userId);
         if (userOpt.isEmpty() || !userOpt.get().isSupper()) {
             sendMessage(absSender, chatId, "You are not allow to do it");

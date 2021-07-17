@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface PeriodService {
 
-    List<Period> getUpcomingUserClasses(int userId);
+    List<Period> getUpcomingUserClasses(long userId);
 
-    void addAll(File file, int userId);
+    void addAll(File file, long userId);
 
     List<Period> getPeriodByDayAndIndex(int periodIndex, DayOfWeek dayOfWeek);
 
-    void removeAllClassesInGroupsUserOwn(int userId);
+    void removeAllClassesInGroupsUserOwn(long userId);
 
     void updateClassRoom(PeriodPK id, String newRoom);
 

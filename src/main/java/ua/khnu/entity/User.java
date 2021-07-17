@@ -13,7 +13,7 @@ import java.util.List;
 public class User {
     @Id
     @Column(name = "id")
-    private int id;
+    private long id;
 
     @Column(name = "chat_id")
     private long chatId;
@@ -51,7 +51,7 @@ public class User {
         settings = new UserSettings();
     }
 
-    public User(int id) {
+    public User(long id) {
         this();
         this.id = id;
     }

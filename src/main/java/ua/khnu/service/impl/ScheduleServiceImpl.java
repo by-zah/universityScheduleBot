@@ -47,7 +47,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public void updateScheduleFromJson(String json, int userId) {
+    public void updateScheduleFromJson(String json, long userId) {
         var user = userRepository.findById(userId);
         if (user.isPresent() && !user.get().isSupper()) {
             throw new BotException("You have not permission to this operation");

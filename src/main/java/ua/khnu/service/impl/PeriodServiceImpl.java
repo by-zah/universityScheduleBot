@@ -56,7 +56,7 @@ public class PeriodServiceImpl implements PeriodService {
 
     @Override
     @Transactional
-    public List<Period> getUpcomingUserClasses(int userId) {
+    public List<Period> getUpcomingUserClasses(long userId) {
         var groups = userRepository.findById(userId)
                 .orElseThrow(() -> new BotException("You aren't registered"))
                 .getGroups();
@@ -83,7 +83,7 @@ public class PeriodServiceImpl implements PeriodService {
 
     @Override
     @Transactional
-    public void addAll(File file, int userId) {
+    public void addAll(File file, long userId) {
         try {
             var user = userRepository.findById(userId);
             if (user.isEmpty()) {
@@ -118,7 +118,7 @@ public class PeriodServiceImpl implements PeriodService {
 
     @Override
     @Transactional
-    public void removeAllClassesInGroupsUserOwn(int userId) {
+    public void removeAllClassesInGroupsUserOwn(long userId) {
         userRepository.findById(userId).ifPresentOrElse(user -> {
                     var periods = user.getGroupsUserOwn().stream()
                             .map(Group::getPeriods)

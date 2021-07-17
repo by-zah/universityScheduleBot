@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ScheduleService {
 
-    void updateScheduleFromJson(String json, int userId);
+    void updateScheduleFromJson(String json, long userId);
 
     ScheduleUnit getFirstClassTime();
 

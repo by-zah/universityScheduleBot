@@ -26,7 +26,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public void createNewGroup(int userId, String message) {
+    public void createNewGroup(long userId, String message) {
         String[] args = message.split(" ");
         if (args.length != 2) {
             throw new BotException("this command allows only 1 argument - group name");
@@ -51,7 +51,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public List<Group> getUserGroups(int userId) {
+    public List<Group> getUserGroups(long userId) {
         return groupRepository.findAllByStudentsIdIn(ImmutableList.of(userId));
     }
 }

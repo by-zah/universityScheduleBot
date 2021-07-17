@@ -1,4 +1,4 @@
-package ua.khnu.commands;
+package ua.khnu.commands.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,11 +7,11 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.CallBackCommand;
+import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Group;
-import ua.khnu.exception.BotException;
 import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
-import ua.khnu.service.UserService;
 import ua.khnu.util.KeyboardBuilder;
 import ua.khnu.util.MessageParser;
 
@@ -21,20 +21,16 @@ import java.util.stream.Collectors;
 import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
-    private static final String COMMAND_IDENTIFIER = "subscribe";
-    private static final String SUCCESS_MESSAGE =
-            String.format("You are successfully subscribed, use /%s to check out you schedule", GetUsersScheduleCommand.COMMAND_IDENTIFIER);
+public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
 
+    public static final String COMMAND_IDENTIFIER = "unsubscribe";
     private final SubscriptionService subscriptionService;
     private final GroupService groupService;
-    private final UserService userService;
 
     @Autowired
-    public SubscribeCommand(SubscriptionService subscriptionService, GroupService groupService, UserService userService) {
+    public UnSubscribeCommand(SubscriptionService subscriptionService, GroupService groupService) {
         this.subscriptionService = subscriptionService;
         this.groupService = groupService;
-        this.userService = userService;
     }
 
     @Override
@@ -44,38 +40,31 @@ public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
 
     @Override
     public void processCallBackMessage(AbsSender absSender, CallbackQuery callbackQuery) {
-        Message message = callbackQuery.getMessage();
-        long chatId = message.getChatId();
-        try {
-            var groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
-            subscriptionService.subscribe(chatId, groupName);
-            sendMessage(absSender, chatId, SUCCESS_MESSAGE);
-        } catch (BotException e) {
-            sendMessage(absSender, chatId, e.getMessage());
-        }
+        long chatId = callbackQuery.getMessage().getChatId();
+        String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
+        subscriptionService.unSubscribe(chatId, groupName);
+        sendMessage(absSender, chatId, "You are successfully unsubscribed");
     }
 
     @Override
     public String getDescription() {
-        return "Subscribe you to schedule updates";
+        return "Unsubscribe you to schedule updates";
     }
-
 
     @Override
     public void safelyProcessMessage(AbsSender absSender, Message message, String[] arguments) {
-        userService.createOrUpdate(message.getFrom().getId(), message.getChatId());
-        List<Group> groups = groupService.getAllGroups();
-        if (groups.isEmpty()) {
-            sendMessage(absSender, message.getChatId(), "There isn`t any groups");
+        List<Group> subscriptions = groupService.getUserGroups(message.getFrom().getId());
+        if (subscriptions.isEmpty()) {
+            sendMessage(absSender, message.getChatId(), "You are not subscribed to any of the groups");
             return;
         }
         SendMessage sendMessage = new SendMessage();
         InlineKeyboardMarkup inlineKeyboardMarkup = KeyboardBuilder
                 .buildInlineKeyboard("/" + COMMAND_IDENTIFIER,
-                        groups.stream()
+                        subscriptions.stream()
                                 .map(Group::getName)
                                 .collect(Collectors.toList()), 3);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-        sendMessage(absSender, message.getChatId(), sendMessage, "Select the group, you want to subscribe");
+        sendMessage(absSender, message.getChatId(), sendMessage, "Select the group, you want to unsubscribe");
     }
 }

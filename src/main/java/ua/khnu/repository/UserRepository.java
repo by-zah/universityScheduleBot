@@ -10,7 +10,7 @@ import ua.khnu.entity.User;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("FROM User u JOIN Subscription  s on u.id = s.id.userChatId JOIN Group g on s.id.group = g.name WHERE g IN :groups AND u.settings.isDeadlineNotificationsEnabled = :isDeadlineNotificationsEnabled")
     List<User> findAllByGroupsContainingAndSettingsIsDeadlineNotificationsEnabled(@Param("groups") List<Group> groups, @Param("isDeadlineNotificationsEnabled") boolean isDeadlineNotificationsEnabled);
@@ -19,5 +19,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findAllByGroupName(@Param("groupName") String groupName);
 
     @Query("SELECT u.id FROM User u WHERE u.id IN :ids AND u.settings.isDeadlineNotificationsEnabled = :isDeadlineNotificationsEnabled")
-    List<Integer> findAllByIdInAndSettingsIsDeadlineNotificationsEnabled(@Param("ids") Iterable<Integer> ids, @Param("isDeadlineNotificationsEnabled") boolean isDeadlineNotificationsEnabled);
+    List<Integer> findAllByIdInAndSettingsIsDeadlineNotificationsEnabled(@Param("ids") Iterable<Long> ids, @Param("isDeadlineNotificationsEnabled") boolean isDeadlineNotificationsEnabled);
 }

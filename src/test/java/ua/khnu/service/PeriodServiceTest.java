@@ -39,7 +39,7 @@ public class PeriodServiceTest {
     @Mock
     private Csv csvParser;
 
-    private final int userId = 1;
+    private final long userId = 1L;
 
     @BeforeClass
     private void beforeClass() {
