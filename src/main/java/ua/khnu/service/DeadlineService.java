@@ -25,4 +25,8 @@ public interface DeadlineService {
     void markUserDeadlineAsDone(UserDeadlinePK userDeadlineId);
 
     boolean changeDeadlineDoneStatus(UserDeadlinePK userDeadlineId);
+
+    List<Deadline> getDeadlinesUserCreate(int userId);
+
+    void removeDeadline(int deadlineId);
 }

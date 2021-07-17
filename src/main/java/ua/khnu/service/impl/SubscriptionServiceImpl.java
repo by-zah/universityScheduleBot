@@ -8,7 +8,6 @@ import ua.khnu.exception.BotException;
 import ua.khnu.repository.GroupRepository;
 import ua.khnu.repository.SubscriptionRepository;
 import ua.khnu.service.SubscriptionService;
-import ua.khnu.util.MessageParser;
 
 import javax.transaction.Transactional;
 
@@ -32,7 +31,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (subscriptionRepository.existsById(new SubscriptionPK(userChatId, groupName))) {
             throw new BotException("You have been already subscribed");
         }
-        Subscription subscription = new Subscription();
+        var subscription = new Subscription();
         subscription.setGroup(groupName);
         subscription.setUserChatId(userChatId);
         subscriptionRepository.save(subscription);
@@ -40,9 +39,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     @Transactional
-    public void unSubscribe(long userChatId, String message) {
-        String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", message);
-        Subscription subscription = new Subscription();
+    public void unSubscribe(long userChatId, String groupName) {
+        if (!subscriptionRepository.existsById(new SubscriptionPK(userChatId, groupName))){
+            throw new BotException("There isn't following subscription");
+        }
+        var subscription = new Subscription();
         subscription.setUserChatId(userChatId);
         subscription.setGroup(groupName);
         subscriptionRepository.delete(subscription);

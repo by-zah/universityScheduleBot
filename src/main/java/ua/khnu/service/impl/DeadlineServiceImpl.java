@@ -62,42 +62,34 @@ public class DeadlineServiceImpl implements DeadlineService {
     @Override
     @Transactional
     public void createDeadline(String groupName, String className, LocalDateTime localDateTime, String description) {
-        if (!groupRepository.existsById(groupName)) {
-            throw new BotException("Group with following name doesn't exist");
-        }
-        var now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
-        if (ChronoUnit.MILLIS.between(now, localDateTime) < 0) {
-            throw new BotException("Can't add deadline in a past");
-        }
-        if (!periodRepository.existsByName(className)) {
-            throw new BotException("Class with following name doesn't exist, recheck please");
-        }
-        deadlineRepository.findByGroupNameAndClassNameAndDeadLineTime(groupName, className, localDateTime)
-                .ifPresentOrElse(deadline -> {
-                    LOG.info("Update existing deadline {}, with new description {}", deadline, description);
-                    var newDescription = deadline.getTaskDescription() + " | " + description;
-                    deadline.setTaskDescription(newDescription);
-                    deadlineRepository.save(deadline);
-                }, () -> {
-                    var deadLine = Deadline.builder()
-                            .deadLineTime(localDateTime)
-                            .groupName(groupName)
-                            .taskDescription(description)
-                            .className(className)
-                            .build();
-                    LOG.info("Create new deadline {}", deadLine);
-                    deadlineRepository.save(deadLine);
-                    userRepository.findAllByGroupName(groupName).stream()
-                            .map(user -> new UserDeadline(new UserDeadlinePK(user.getId(), deadLine.getId()), false))
-                            .forEach(userDeadlineRepository::save);
-                });
-        deadlineSendMessageDemon.onNewDeadlineAdded();
+        createDeadline(Deadline.builder()
+                .groupName(groupName)
+                .className(className)
+                .deadLineTime(localDateTime)
+                .taskDescription(description)
+                .build());
     }
 
     @Override
     @Transactional
     public void createDeadline(Deadline deadline) {
-        createDeadline(deadline.getGroupName(), deadline.getClassName(), deadline.getDeadLineTime(), deadline.getTaskDescription());
+        validateDeadline(deadline.getGroupName(), deadline.getClassName(), deadline.getDeadLineTime());
+        deadlineRepository.findByGroupNameAndClassNameAndDeadLineTime(deadline.getGroupName(), deadline.getClassName(), deadline.getDeadLineTime())
+                .ifPresentOrElse(existDeadline -> {
+                    var description = deadline.getTaskDescription();
+                    LOG.info("Update existing deadline {}, with new description {}", existDeadline, description);
+                    var newDescription = existDeadline.getTaskDescription() + " | " + description;
+                    existDeadline.setTaskDescription(newDescription);
+                    deadlineRepository.save(existDeadline);
+                }, () -> {
+                    LOG.info("Create new deadline {}", deadline);
+                    deadlineRepository.save(deadline);
+                    userRepository.findAllByGroupName(deadline.getGroupName()).stream()
+                            .map(user -> new UserDeadline(new UserDeadlinePK(user.getId(), deadline.getId()), false))
+                            .forEach(userDeadlineRepository::save);
+                });
+        deadlineSendMessageDemon.onNewDeadlineAdded();
+
     }
 
     @Override
@@ -174,6 +166,32 @@ public class DeadlineServiceImpl implements DeadlineService {
         }
         userDeadline.ifPresent(userDeadlineP -> userDeadlineP.setDone(!userDeadlineP.isDone()));
         return userDeadline.get().isDone();
+    }
+
+    @Override
+    public List<Deadline> getDeadlinesUserCreate(int userId) {
+        return deadlineRepository.findAllByCreatedById(userId);
+    }
+
+    @Override
+    public void removeDeadline(int deadlineId) {
+        if (!deadlineRepository.existsById(deadlineId)) {
+            throw new BotException("The deadline doesn't exist");
+        }
+        deadlineRepository.deleteById(deadlineId);
+    }
+
+    private void validateDeadline(String groupName, String className, LocalDateTime localDateTime) {
+        if (!groupRepository.existsById(groupName)) {
+            throw new BotException("Group with following name doesn't exist");
+        }
+        var now = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID));
+        if (ChronoUnit.MILLIS.between(now, localDateTime) < 0) {
+            throw new BotException("Can't add deadline in a past");
+        }
+        if (!periodRepository.existsByName(className)) {
+            throw new BotException("Class with following name doesn't exist, recheck please");
+        }
     }
 
     private Stream<DeadlineNotificationDto> deadlinesToDto(List<Deadline> deadlines, long millis) {

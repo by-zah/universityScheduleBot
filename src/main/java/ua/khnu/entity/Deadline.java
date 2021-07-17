@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
@@ -37,6 +38,10 @@ public class Deadline {
     @Column(name = "class_name")
     private String className;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", updatable = false)
+    private User createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_name", insertable = false, updatable = false)
     private Group relatedGroup;
@@ -65,4 +70,7 @@ public class Deadline {
         return className;
     }
 
+    public Optional<User> getCreatedBy() {
+        return Optional.ofNullable(createdBy);
+    }
 }

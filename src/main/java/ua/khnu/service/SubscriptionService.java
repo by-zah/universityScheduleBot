@@ -4,6 +4,6 @@ public interface SubscriptionService {
 
     void subscribe(long userChatId, String groupName);
 
-    void unSubscribe(long userChatId, String message);
+    void unSubscribe(long userChatId, String groupName);
 
 }

@@ -2,6 +2,7 @@ package ua.khnu.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ua.khnu.entity.Deadline;
+import ua.khnu.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,5 +13,7 @@ public interface DeadlineRepository extends JpaRepository<Deadline, Integer> {
     Optional<Deadline> findByGroupNameAndClassNameAndDeadLineTime(String groupName, String className, LocalDateTime deadlineTime);
 
     List<Deadline> findByDeadLineTimeGreaterThan(LocalDateTime deadlineTime);
+
+    List<Deadline> findAllByCreatedById(int userId);
 
 }

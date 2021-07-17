@@ -19,6 +19,7 @@ import ua.khnu.exception.BotException;
 import ua.khnu.service.DeadlineService;
 import ua.khnu.service.GroupService;
 import ua.khnu.service.PeriodService;
+import ua.khnu.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
     private final List<MessageAndKeyboard> messages;
     private final DeadlineService deadlineService;
     private final PeriodService periodService;
+    private final UserService userService;
 
     @AllArgsConstructor
     @Getter
@@ -52,10 +54,11 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
     }
 
     @Autowired
-    public AddDeadlineCommand(MultiCommandBuildersContainer multiCommandBuilders, GroupService groupService, PeriodService periodService, DeadlineService deadlineService) {
+    public AddDeadlineCommand(MultiCommandBuildersContainer multiCommandBuilders, GroupService groupService, PeriodService periodService, DeadlineService deadlineService, UserService userService) {
         this.multiCommandBuilders = multiCommandBuilders;
         this.deadlineService = deadlineService;
         this.periodService = periodService;
+        this.userService = userService;
         messages = ImmutableList.of(
                 new MessageAndKeyboard("Select group name " + OR, () -> {
                     var groupNames = groupService.getAllGroups()
@@ -155,7 +158,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
                 multiCommandObjectBuilder.setNextValue(incomingMessage);
             }
             if (multiCommandObjectBuilder.isDone()) {
-                saveDeadline(multiCommandObjectBuilder.getObject());
+                saveDeadline(multiCommandObjectBuilder.getObject(), chatId, (int) chatId);
                 sendMessage(absSender, chatId, "Deadline successfully created!");
                 return;
             }
@@ -183,8 +186,12 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
         return keyboard;
     }
 
-    private void saveDeadline(Deadline deadline) {
+    private void saveDeadline(Deadline deadline, long chatId, int userId) {
+        var user = userService.getUserById(userId).orElseGet(() -> userService.createUser(userId, chatId));
+        deadline.setCreatedBy(user);
         deadlineService.createDeadline(deadline);
+        multiCommandBuilders.getMultiCommandBuilders()
+                .removeIf(multiCommandObjectBuilder -> chatId == multiCommandObjectBuilder.getRelatedChatId());
     }
 
 }

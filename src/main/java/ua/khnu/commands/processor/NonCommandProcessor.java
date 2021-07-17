@@ -17,6 +17,7 @@ import static ua.khnu.util.MessageSender.sendMessage;
 @Component
 public class NonCommandProcessor {
     private static final Logger LOG = LogManager.getLogger(NonCommandProcessor.class);
+    private static final String UNSUPPORTED_COMMAND = "Unsupported command";
     private final List<CommandProcessor> processors;
     private final MultiCommandBuildersContainer multiCommandBuildersContainer;
     private final List<MultiCommand> multiCommands;
@@ -48,18 +49,22 @@ public class NonCommandProcessor {
 
     private void processIfNoProcessorsFound(Update update, AbsSender absSender) {
         var chatId = getChatId(update);
+        if (update.getMessage().isCommand()) {
+            sendMessage(absSender, chatId, UNSUPPORTED_COMMAND);
+            return;
+        }
         var builder = multiCommandBuildersContainer.getMultiCommandBuilders().stream()
                 .filter(multiCommandObjectBuilder -> multiCommandObjectBuilder.getRelatedChatId() == chatId)
                 .findAny();
         if (builder.isEmpty()) {
-            sendMessage(absSender, chatId, "Unsupported command");
+            sendMessage(absSender, chatId, UNSUPPORTED_COMMAND);
             return;
         }
         var command = multiCommands.stream()
                 .filter(multiCommand -> multiCommand.getCommandIdentifier().equals(builder.get().getOwnerIdentifier()))
                 .findAny();
         if (command.isEmpty()) {
-            sendMessage(absSender, chatId, "Unsupported command");
+            sendMessage(absSender, chatId, UNSUPPORTED_COMMAND);
         } else {
             final var message = update.getMessage();
             command.get().processMultiCommand(absSender, message.getChatId(), message.getText());

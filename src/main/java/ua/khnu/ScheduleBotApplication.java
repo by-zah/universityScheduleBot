@@ -9,18 +9,19 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.ServerSocket;
 
 //TODO
 // 1. Add localization
 // 2. Investigate and implement /stop command - done
-// 3. Switch to TimedSendLongPollingBot
+// 3. Switch to TimedSendLongPollingBot - done
 // 4. Deadline feature - done
 // 5. Collect statistic
 // 6. User settings - done
 // 7. Manage deadline that user created
+// 8. Make deadline notification times more flexible
+// 9. My deadlines
 
 
 @ComponentScan
@@ -36,9 +37,6 @@ public class ScheduleBotApplication {
     }
 
     private static void listenHostingPort() {
-//        if (PORT == null){
-//            return;
-//        }
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             LOG.info(serverSocket.accept());
         } catch (IOException e) {
@@ -50,7 +48,7 @@ public class ScheduleBotApplication {
         try {
             LOG.info("Registering Bot...");
             var telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(context.getBean(Bot.class));
+            telegramBotsApi.registerBot(context.getBean(BotV2.class));
             LOG.info("Bot bot is ready for work!");
         } catch (TelegramApiException e) {
             LOG.error("Error while initializing bot!", e);

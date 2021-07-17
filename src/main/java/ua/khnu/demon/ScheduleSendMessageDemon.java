@@ -46,7 +46,6 @@ public class ScheduleSendMessageDemon implements Runnable {
                 }
                 var dayOfWeek = LocalDateTime.now(ZoneId.of(TIME_ZONE_ID)).getDayOfWeek();
                 mailingService.sendClassNotifications(nextClassStart.getIndex(), dayOfWeek);
-                LOG.info("send notification to all students");
                 Thread.sleep(90000);
             } catch (InterruptedException e) {
                 LOG.info("new schedule set");

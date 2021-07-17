@@ -11,6 +11,7 @@ import ua.khnu.entity.Group;
 import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
 import ua.khnu.util.KeyboardBuilder;
+import ua.khnu.util.MessageParser;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +39,8 @@ public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
     @Override
     public void processCallBackMessage(AbsSender absSender, CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
-        subscriptionService.unSubscribe(chatId, callbackQuery.getData());
+        String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
+        subscriptionService.unSubscribe(chatId, groupName);
         sendMessage(absSender, chatId, "You are successfully unsubscribed");
     }
 

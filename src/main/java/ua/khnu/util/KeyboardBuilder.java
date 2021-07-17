@@ -11,6 +11,9 @@ public final class KeyboardBuilder {
     }
 
     public static InlineKeyboardMarkup buildInlineKeyboard(String commandIdentifier, List<String> args, List<String> buttonTexts, int buttonsInRow) {
+        if (args.isEmpty()){
+            return null;
+        }
         if (buttonTexts == null || args.size() != buttonTexts.size()) {
             throw new IllegalArgumentException();
         }

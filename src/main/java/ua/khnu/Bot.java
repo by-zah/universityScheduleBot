@@ -20,7 +20,7 @@ public class Bot extends TelegramLongPollingCommandBot {
         super();
         botToken = System.getenv("BOT_TOKEN");
         commands.forEach(this::register);
-        mailingService.setBot(this);
+//        mailingService.setBot(this);
         this.nonCommandProcessor = nonCommandProcessor;
     }
 

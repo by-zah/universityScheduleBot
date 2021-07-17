@@ -32,4 +32,5 @@ public class Subscription {
     public void setGroup(String group) {
         id.setGroup(group);
     }
+
 }

@@ -6,7 +6,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ua.khnu.Bot;
+import ua.khnu.BotV2;
 import ua.khnu.commands.MarkDeadlineAsDoneCommand;
 import ua.khnu.dto.ScheduleContainer;
 import ua.khnu.entity.Deadline;
@@ -19,46 +19,37 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static ua.khnu.util.Constants.ONE_SECOND_IN_MILLIS;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.MessageSender.execute;
 
 @Service
 public class MailingServiceImpl implements MailingService {
     private static final Logger LOG = LogManager.getLogger(MailingServiceImpl.class);
 
     private final ScheduleContainer scheduleContainer;
-    private final ExecutorService executorService;
     private final Queue<SendMessage> queue;
-    private final AtomicBoolean isMailingRunning;
     private final PeriodService periodService;
     private final UserRepository userRepository;
-    private Bot bot;
+    private BotV2 bot;
 
     @Autowired
     public MailingServiceImpl(ScheduleContainer scheduleContainer, PeriodService periodService, UserRepository userRepository) {
         this.scheduleContainer = scheduleContainer;
         this.periodService = periodService;
         this.userRepository = userRepository;
-        executorService = Executors.newSingleThreadExecutor();
         queue = new ConcurrentLinkedQueue<>();
-        isMailingRunning = new AtomicBoolean(false);
     }
 
     //to resolve circulation dependencies
     @Override
-    public void setBot(Bot bot) {
+    public void setBot(BotV2 bot) {
         this.bot = bot;
     }
 
@@ -92,11 +83,7 @@ public class MailingServiceImpl implements MailingService {
 
     @Override
     public void sendMailingMessages(List<SendMessage> messages) {
-        queue.addAll(messages);
-        LOG.info("{} messages added to queue, current queue size is {}", messages.size(), queue.size());
-        if (!isMailingRunning.get()) {
-            performMailing();
-        }
+        messages.forEach(message -> bot.sendTimed(Long.valueOf(message.getChatId()), message));
     }
 
     @Override
@@ -130,40 +117,40 @@ public class MailingServiceImpl implements MailingService {
         sendMailingMessages(messages);
     }
 
-    private void performMailing() {
-        executorService.execute(() -> {
-            LOG.info("mailing thread is started");
-            try {
-                List<Long> countTimes = new ArrayList<>();
-                isMailingRunning.set(true);
-                while (true) {
-                    var message = queuePoll();
-                    if (message.isEmpty() && queue.isEmpty()) {
-                        wait(countTimes);
-                        if (queue.isEmpty()) {
-                            break;
-                        }
-                        message = queuePoll();
-                    }
-                    if (message.isPresent()) {
-                        var m = message.get();
-                        if (countTimes.size() == 30) {
-                            countTimes.removeIf(l -> System.currentTimeMillis() - l >= ONE_SECOND_IN_MILLIS);
-                        }
-                        if (countTimes.size() == 30) {
-                            wait(countTimes);
-                        }
-                        execute(bot, m);
-                        countTimes.add(System.currentTimeMillis());
-                    }
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } finally {
-                isMailingRunning.set(false);
-            }
-        });
-    }
+//    private void performMailing() {
+//        executorService.execute(() -> {
+//            LOG.info("mailing thread is started");
+//            try {
+//                List<Long> countTimes = new ArrayList<>();
+//                isMailingRunning.set(true);
+//                while (true) {
+//                    var message = queuePoll();
+//                    if (message.isEmpty() && queue.isEmpty()) {
+//                        wait(countTimes);
+//                        if (queue.isEmpty()) {
+//                            break;
+//                        }
+//                        message = queuePoll();
+//                    }
+//                    if (message.isPresent()) {
+//                        var m = message.get();
+//                        if (countTimes.size() == 30) {
+//                            countTimes.removeIf(l -> System.currentTimeMillis() - l >= ONE_SECOND_IN_MILLIS);
+//                        }
+//                        if (countTimes.size() == 30) {
+//                            wait(countTimes);
+//                        }
+//                        execute(bot, m);
+//                        countTimes.add(System.currentTimeMillis());
+//                    }
+//                }
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            } finally {
+//                isMailingRunning.set(false);
+//            }
+//        });
+//    }
 
     private void wait(List<Long> countTimes) throws InterruptedException {
         LOG.info("Mailing thread is going to sleep, queue size = {}", queue.size());

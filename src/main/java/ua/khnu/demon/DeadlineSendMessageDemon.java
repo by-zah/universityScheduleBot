@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static ua.khnu.util.Constants.ONE_SECOND_IN_MILLIS;
 import static ua.khnu.util.Constants.TIME_ZONE_ID;
 
 @Component
@@ -39,6 +40,7 @@ public class DeadlineSendMessageDemon implements Runnable {
         while (true) {
             try {
                 synchronized (this) {
+                    wait(ONE_SECOND_IN_MILLIS);
                     nextDeadlineNotifications = deadlineService.getNextDeadlineToNotification();
                     while (nextDeadlineNotifications.isEmpty()) {
                         LOG.info("No deadlines, wait for updates");
