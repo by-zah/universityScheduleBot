@@ -26,6 +26,7 @@ jobs:
       
     - uses: actions/checkout@v2
     - run: mkdir -p target/
+    - run: ls -a
     - run: echo hello > target/bin/workerBot
 
     - uses: actions/upload-artifact@v2
