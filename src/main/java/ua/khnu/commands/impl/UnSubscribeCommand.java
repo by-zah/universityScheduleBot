@@ -7,21 +7,19 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Group;
 import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
 import ua.khnu.util.KeyboardBuilder;
-import ua.khnu.util.MessageParser;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
+public class UnSubscribeCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand {
 
     public static final String COMMAND_IDENTIFIER = "unsubscribe";
     private final SubscriptionService subscriptionService;
@@ -41,7 +39,7 @@ public class UnSubscribeCommand implements SafelyIBotCommand, CallBackCommand {
     @Override
     public void processCallBackMessage(AbsSender absSender, CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
-        String groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
+        String groupName = getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
         subscriptionService.unSubscribe(chatId, groupName);
         sendMessage(absSender, chatId, "You are successfully unsubscribed");
     }

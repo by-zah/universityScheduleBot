@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Deadline;
@@ -20,12 +21,9 @@ import java.util.stream.IntStream;
 
 import static ua.khnu.util.Constants.DATE_TIME_FORMATTER;
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.MessageParser.getArgumentByPositionAndSeparator;
-import static ua.khnu.util.MessageSender.execute;
-import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class RemoveDeadlineUserCreateCommand implements SafelyIBotCommand, CallBackCommand {
+public class RemoveDeadlineUserCreateCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand {
     private static final String COMMAND_IDENTIFIER = "removedeadline";
     private static final String DEADLINE_ROW_TEMPLATE = "%d. %s %s %s %s";
     private static final String YOU_DON_T_HAVE_ANY_ACTIVE_DEADLINE_YET = "You don't have any active deadline yet";

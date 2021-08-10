@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.entity.pk.UserDeadlinePK;
 import ua.khnu.service.DeadlineService;
@@ -12,11 +13,9 @@ import ua.khnu.service.DeadlineService;
 import java.util.List;
 
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.MessageParser.getArgumentByPositionAndSeparator;
-import static ua.khnu.util.MessageSender.execute;
 
 @Component
-public class MarkDeadlineAsDoneCommand implements CallBackCommand {
+public class MarkDeadlineAsDoneCommand extends AbstractCommand implements CallBackCommand {
     public static final String COMMAND_IDENTIFIER = "markDeadlineAsDone";
     private final DeadlineService deadlineService;
 

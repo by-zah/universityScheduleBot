@@ -1,4 +1,4 @@
-package ua.khnu.util;
+package ua.khnu.commands;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,24 +10,23 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import ua.khnu.exception.BotException;
 
-public final class MessageSender {
-    private static final Logger LOG = LogManager.getLogger(MessageSender.class);
+public abstract class AbstractCommand {
+    private static final Logger LOG = LogManager.getLogger(AbstractCommand.class);
 
-    private MessageSender() {
-    }
 
-    public static void sendMessage(AbsSender absSender, long chatId, String messageText) {
+    protected void sendMessage(AbsSender absSender, long chatId, String messageText) {
         sendMessage(absSender, chatId, new SendMessage(), messageText);
     }
 
-    public static void sendMessage(AbsSender absSender, long chatId, SendMessage reMessage, String messageText) {
+    protected void sendMessage(AbsSender absSender, long chatId, SendMessage reMessage, String messageText) {
         reMessage.setChatId(String.valueOf(chatId));
         reMessage.setText(messageText);
         execute(absSender, reMessage);
     }
 
-    public static void sendFile(AbsSender absSender, InputFile inputFile, long chatId, String messageText) {
+    protected void sendFile(AbsSender absSender, InputFile inputFile, long chatId, String messageText) {
         var sendDocument = new SendDocument();
         sendDocument.setDocument(inputFile);
         sendDocument.setCaption(messageText);
@@ -40,13 +39,13 @@ public final class MessageSender {
 
     }
 
-    public static void sendCallBackAnswer(AbsSender absSender, String callBackQueryId) {
+    protected void sendCallBackAnswer(AbsSender absSender, String callBackQueryId) {
         AnswerCallbackQuery message = new AnswerCallbackQuery();
         message.setCallbackQueryId(callBackQueryId);
         execute(absSender, message);
     }
 
-    public static void execute(AbsSender absSender, BotApiMethod<?> apiMethod) {
+    protected void execute(AbsSender absSender, BotApiMethod<?> apiMethod) {
         try {
             LOG.info("Execute {}", apiMethod);
             absSender.execute(apiMethod);
@@ -55,5 +54,13 @@ public final class MessageSender {
         } catch (TelegramApiException e) {
             LOG.error("Can not execute reMessage {}", apiMethod, e);
         }
+    }
+
+    protected String getArgumentByPositionAndSeparator(int position, String separator, String message) {
+        String[] args = message.split(separator);
+        if (args.length < position + 1) {
+            throw new BotException("This command should have at least " + position + " argument(s)");
+        }
+        return args[position];
     }
 }

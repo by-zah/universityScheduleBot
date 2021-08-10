@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Group;
@@ -15,15 +16,12 @@ import ua.khnu.service.GroupService;
 import ua.khnu.service.SubscriptionService;
 import ua.khnu.service.UserService;
 import ua.khnu.util.KeyboardBuilder;
-import ua.khnu.util.MessageParser;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
+public class SubscribeCommand extends AbstractCommand implements CallBackCommand, SafelyIBotCommand {
     private static final String COMMAND_IDENTIFIER = "subscribe";
     private static final String SUCCESS_MESSAGE =
             String.format("You are successfully subscribed, use /%s to check out you schedule", GetUsersScheduleCommand.COMMAND_IDENTIFIER);
@@ -49,7 +47,7 @@ public class SubscribeCommand implements CallBackCommand, SafelyIBotCommand {
         Message message = callbackQuery.getMessage();
         long chatId = message.getChatId();
         try {
-            var groupName = MessageParser.getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
+            var groupName = getArgumentByPositionAndSeparator(1, " ", callbackQuery.getData());
             subscriptionService.subscribe(chatId, groupName);
             sendMessage(absSender, chatId, SUCCESS_MESSAGE);
         } catch (BotException e) {

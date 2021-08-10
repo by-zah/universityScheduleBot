@@ -8,6 +8,7 @@ import ua.khnu.dto.DeadlineNotificationDto;
 import ua.khnu.service.DeadlineService;
 import ua.khnu.service.MailingService;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +33,10 @@ public class DeadlineSendMessageDemon implements Runnable {
         this.deadlineService = deadlineService;
         nextDeadlineNotifications = List.of();
         deadlineService.setDeadlineSendMessageDemon(this);
+    }
+
+    @PostConstruct
+    private void postConstruct(){
         Executors.newSingleThreadExecutor().execute(this);
     }
 

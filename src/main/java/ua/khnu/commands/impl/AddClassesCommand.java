@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.FileCommand;
 import ua.khnu.exception.BotException;
 import ua.khnu.service.PeriodService;
@@ -11,10 +12,8 @@ import ua.khnu.util.FileUtil;
 
 import java.util.List;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class AddClassesCommand implements FileCommand {
+public class AddClassesCommand extends AbstractCommand implements FileCommand {
     private final PeriodService periodService;
 
     @Autowired

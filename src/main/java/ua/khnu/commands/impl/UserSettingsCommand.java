@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.UserSettings;
@@ -21,11 +22,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.MessageParser.getArgumentByPositionAndSeparator;
-import static ua.khnu.util.MessageSender.execute;
 
 @Component
-public class UserSettingsCommand implements SafelyIBotCommand, CallBackCommand {
+public class UserSettingsCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand {
     public static final String COMMAND_IDENTIFIER = "settings";
     private static final String SETTINGS_TEMPLATE = "Here is you settings:\n" +
             "Enable class notifications:%s\n" +

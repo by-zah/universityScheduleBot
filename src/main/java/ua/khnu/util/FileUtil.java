@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 public final class FileUtil {
-    private static final Logger LOG = LogManager.getLogger(MessageSender.class);
+    private static final Logger LOG = LogManager.getLogger(FileUtil.class);
 
     private FileUtil() {
     }

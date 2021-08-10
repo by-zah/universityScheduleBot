@@ -4,14 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.service.DeadlineService;
 
 import static ua.khnu.util.FileUtil.generateInputFile;
-import static ua.khnu.util.MessageSender.sendFile;
 
 @Component
-public class GetDeadlinesFileCommand implements SafelyIBotCommand {
+public class GetDeadlinesFileCommand extends AbstractCommand implements SafelyIBotCommand {
     public static final String COMMAND_IDENTIFIER = "getDeadlinesFile";
     private final DeadlineService deadlineService;
 

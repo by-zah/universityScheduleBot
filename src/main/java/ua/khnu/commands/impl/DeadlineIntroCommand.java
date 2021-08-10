@@ -5,12 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class DeadlineIntroCommand implements SafelyIBotCommand {
+public class DeadlineIntroCommand extends AbstractCommand implements SafelyIBotCommand {
     private static final Logger LOG = LogManager.getLogger(DeadlineIntroCommand.class);
     private static final String COMMAND_IDENTIFIER = "deadline";
 

@@ -6,15 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.FileCommand;
 import ua.khnu.exception.BotException;
 import ua.khnu.service.ScheduleService;
 import ua.khnu.util.FileUtil;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class UpdateScheduleCommand implements FileCommand {
+public class UpdateScheduleCommand extends AbstractCommand implements FileCommand {
     private static final Logger LOG = LogManager.getLogger(UpdateScheduleCommand.class);
     private final ScheduleService service;
     private final Thread scheduleDemon;

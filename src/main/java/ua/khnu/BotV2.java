@@ -10,9 +10,10 @@ import org.telegram.telegrambots.extensions.bots.timedbot.TimedSendLongPollingBo
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ua.khnu.commands.processor.NonCommandProcessor;
 import ua.khnu.service.MailingService;
-import ua.khnu.util.MessageSender;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +43,13 @@ public class BotV2 extends TimedSendLongPollingBot {
         if (!(messageRequest instanceof BotApiMethod<?>)) {
             throw new IllegalArgumentException();
         }
-        MessageSender.execute(this, (BotApiMethod<?>) messageRequest);
-
+        try {
+            execute((BotApiMethod<?>) messageRequest);
+        } catch (TelegramApiRequestException e) {
+            LOG.error(e);
+        } catch (TelegramApiException e) {
+            LOG.error("Can not execute reMessage {}", messageRequest, e);
+        }
     }
 
     @Override

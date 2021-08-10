@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.MultiCommand;
 import ua.khnu.commands.SafelyIBotCommand;
@@ -36,10 +37,9 @@ import java.util.stream.IntStream;
 
 import static ua.khnu.util.Constants.DATE_TIME_FORMATTER;
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
-import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, MultiCommand {
+public class AddDeadlineCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand, MultiCommand {
     public static final String COMMAND_IDENTIFIER = "addDeadline";
     private static final String CLEAN = "clean";
     private static final String OR = "or use clean button to stop or restart deadline creation";
@@ -161,7 +161,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
                 multiCommandObjectBuilder.setNextValue(incomingMessage);
             }
             if (multiCommandObjectBuilder.isDone()) {
-                saveDeadline(multiCommandObjectBuilder.getObject(), chatId, (int) chatId);
+                saveDeadline(multiCommandObjectBuilder.getObject(), chatId,  chatId);
                 sendMessage(absSender, chatId, "Deadline successfully created!");
                 return;
             }
@@ -189,7 +189,7 @@ public class AddDeadlineCommand implements SafelyIBotCommand, CallBackCommand, M
         return keyboard;
     }
 
-    private void saveDeadline(Deadline deadline, long chatId, int userId) {
+    private void saveDeadline(Deadline deadline, long chatId, long userId) {
         var user = userService.getUserById(userId).orElseGet(() -> userService.createUser(userId, chatId));
         deadline.setCreatedBy(user);
         deadlineService.createDeadline(deadline);

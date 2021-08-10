@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.service.UserService;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class StartCommand implements SafelyIBotCommand {
+public class StartCommand extends AbstractCommand implements SafelyIBotCommand {
     private final UserService userService;
 
     @Autowired

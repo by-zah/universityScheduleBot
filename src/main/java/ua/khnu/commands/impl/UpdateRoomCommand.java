@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.PeriodType;
 import ua.khnu.entity.pk.PeriodPK;
@@ -11,10 +12,8 @@ import ua.khnu.service.PeriodService;
 
 import java.time.DayOfWeek;
 
-import static ua.khnu.util.MessageSender.sendMessage;
-
 @Component
-public class UpdateRoomCommand implements SafelyIBotCommand {
+public class UpdateRoomCommand extends AbstractCommand implements SafelyIBotCommand {
     private final PeriodService periodService;
 
     @Autowired
