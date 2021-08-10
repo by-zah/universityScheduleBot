@@ -12,11 +12,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ua.khnu.exception.BotException;
 
-public abstract class AbstractCommand {
-    private static final Logger LOG = LogManager.getLogger(AbstractCommand.class);
+public abstract class AbstractSender {
+    private static final Logger LOG = LogManager.getLogger(AbstractSender.class);
 
 
-    protected void sendMessage(AbsSender absSender, long chatId, String messageText) {
+    public void sendMessage(AbsSender absSender, long chatId, String messageText) {
         sendMessage(absSender, chatId, new SendMessage(), messageText);
     }
 

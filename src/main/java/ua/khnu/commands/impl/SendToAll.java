@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.commands.AbstractCommand;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.User;
 import ua.khnu.service.MailingService;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class SendToAll extends AbstractCommand implements SafelyIBotCommand {
+public class SendToAll extends AbstractSender implements SafelyIBotCommand {
     private static final String COMMAND_IDENTIFIER = "sendToAll";
     private static final int MESSAGE_OFFSET = COMMAND_IDENTIFIER.length() + 2;
 

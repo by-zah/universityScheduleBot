@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.commands.AbstractCommand;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Group;
 import ua.khnu.entity.Period;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 
 @Component
-public class GetUsersScheduleCommand extends AbstractCommand implements SafelyIBotCommand {
+public class GetUsersScheduleCommand extends AbstractSender implements SafelyIBotCommand {
     private static final String MESSAGE_TEMPLATE = "Here are %s's %s classes:%n%s";
     private static final String CLASS_TEMPLATE = "%s. %s (%s)%n";
     public static final String COMMAND_IDENTIFIER = "schedule";

@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.MultiCommand;
 import ua.khnu.dto.MultiCommandBuildersContainer;
 import ua.khnu.exception.BotException;
 
 import java.util.List;
 
-import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class NonCommandProcessor {
+public class NonCommandProcessor extends AbstractSender {
     private static final Logger LOG = LogManager.getLogger(NonCommandProcessor.class);
     private static final String UNSUPPORTED_COMMAND = "Unsupported command";
     private final List<CommandProcessor> processors;
@@ -76,4 +76,5 @@ public class NonCommandProcessor {
         var message = update.hasMessage() ? update.getMessage() : update.getCallbackQuery().getMessage();
         return message.getChatId();
     }
+
 }

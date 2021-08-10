@@ -6,12 +6,10 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ua.khnu.exception.BotException;
-import ua.khnu.util.MessageSender;
 
-import static ua.khnu.util.MessageSender.sendMessage;
 
 public interface SafelyIBotCommand extends IBotCommand {
-    Logger LOG = LogManager.getLogger(MessageSender.class);
+    Logger LOG = LogManager.getLogger(SafelyIBotCommand.class);
 
     @Override
     default void processMessage(AbsSender absSender, Message message, String[] strings) {
@@ -32,4 +30,5 @@ public interface SafelyIBotCommand extends IBotCommand {
         sendMessage(absSender, chatId, e.getMessage());
     }
 
+    void sendMessage(AbsSender absSender, long chatId, String messageText);
 }

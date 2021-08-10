@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.CallBackCommand;
 
 import java.util.HashMap;
@@ -13,10 +14,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static ua.khnu.util.MessageSender.sendMessage;
 
 @Component
-public class CallBackCommandProcessor implements CommandProcessor {
+public class CallBackCommandProcessor extends AbstractSender implements CommandProcessor {
     private final Map<String, CallBackCommand> commands;
 
     @Autowired

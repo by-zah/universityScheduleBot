@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.commands.AbstractCommand;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.MultiCommand;
 import ua.khnu.commands.SafelyIBotCommand;
@@ -39,7 +39,7 @@ import static ua.khnu.util.Constants.DATE_TIME_FORMATTER;
 import static ua.khnu.util.KeyboardBuilder.buildInlineKeyboard;
 
 @Component
-public class AddDeadlineCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand, MultiCommand {
+public class AddDeadlineCommand extends AbstractSender implements SafelyIBotCommand, CallBackCommand, MultiCommand {
     public static final String COMMAND_IDENTIFIER = "addDeadline";
     private static final String CLEAN = "clean";
     private static final String OR = "or use clean button to stop or restart deadline creation";

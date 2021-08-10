@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ua.khnu.commands.AbstractCommand;
+import ua.khnu.commands.AbstractSender;
 import ua.khnu.commands.CallBackCommand;
 import ua.khnu.commands.SafelyIBotCommand;
 import ua.khnu.entity.Group;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class UnSubscribeCommand extends AbstractCommand implements SafelyIBotCommand, CallBackCommand {
+public class UnSubscribeCommand extends AbstractSender implements SafelyIBotCommand, CallBackCommand {
 
     public static final String COMMAND_IDENTIFIER = "unsubscribe";
     private final SubscriptionService subscriptionService;
