@@ -29,7 +29,7 @@ jobs:
     
     - uses: actions/upload-artifact@v2
       with:
-       name: target/
+       name: target/universityScheduleBot-1.0-SNAPSHOT.jar
        path: target/
   
   
@@ -47,7 +47,7 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-          name: de-sy-file
+          name: universityScheduleBot-1.0-SNAPSHOT.jar
           path: target/
     - uses: actions/checkout@v2
     - name: Build the Docker image
